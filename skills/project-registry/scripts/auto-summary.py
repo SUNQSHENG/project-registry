@@ -135,8 +135,30 @@ def parse_summary(raw: str) -> dict:
         return {}
 
 
+def insert_to_section(md: str, section: str, lines: list[str]) -> str:
+    """在指定 ## 段落内末尾插入行（段落不存在则追加到文件末尾）"""
+    if not lines:
+        return md
+    pat = re.compile(rf"^## {re.escape(section)}\n", re.M)
+    m = pat.search(md)
+    if not m:
+        return md.rstrip() + "\n" + "\n".join(lines) + "\n"
+    # 段落结束 = 任意下一个 ## 标题（不是同一个 section！）
+    end = re.search(r"^## ", md, re.M)  # placeholder
+    end = re.search(r"^## ", md[m.end():], re.M)
+    tail_start = (m.end() + end.start()) if end else len(md)
+    segment = md[m.end():tail_start]
+    # 段内去重（精确匹配行）
+    existing_lines = set(l.strip() for l in segment.splitlines() if l.strip())
+    new_lines = [l for l in lines if l.strip() not in existing_lines]
+    if not new_lines:
+        return md
+    insert = "\n" + "\n".join(new_lines) + "\n"
+    return md[:tail_start] + insert + md[tail_start:]
+
+
 def merge_claude_md(project_dir: Path, summary: dict):
-    """把摘要合并进 CLAUDE.md（追加决策/更新进展/待办/下一步）"""
+    """把摘要合并进 CLAUDE.md（按段落插入决策/待办/下一步，更新进展）"""
     md_path = project_dir / "CLAUDE.md"
     if not md_path.exists():
         return
@@ -151,48 +173,51 @@ def merge_claude_md(project_dir: Path, summary: dict):
         else:
             md += f"\n- 最新进展：{today} | {progress[:100]}\n"
 
-    # ② 新决策：追加到「架构决策记录」（含原因/状态，去重）
+    # ② 新决策：插入「架构决策记录」段内（含原因/状态，段内去重）
     decisions = summary.get("decisions", [])
-    if isinstance(decisions, list):
-        for d in decisions:
-            if not isinstance(d, dict):
-                continue
-            title = str(d.get("decision") or d.get("title") or "").strip()
-            if not title:
-                continue
-            reason = str(d.get("reason") or "").strip()
-            line = f"- [🔄进行中] {today} — {title}"
-            if reason:
-                line += f"（原因：{reason}）"
-            if line not in md:
-                md = md.rstrip() + "\n" + line + "\n"
+    d_lines = []
+    for d in decisions if isinstance(decisions, list) else []:
+        if not isinstance(d, dict):
+            continue
+        title = str(d.get("decision") or d.get("title") or "").strip()
+        if not title:
+            continue
+        reason = str(d.get("reason") or "").strip()
+        line = f"- [🔄进行中] {today} — {title}"
+        if reason:
+            line += f"（原因：{reason}）"
+        d_lines.append(line)
+    md = insert_to_section(md, "架构决策记录", d_lines)
 
-    # ③ 待办：新增未完成项（去重）
+    # ③ 待办：插入「待办」段内（去重）
     todos = summary.get("todos", [])
-    if isinstance(todos, list):
-        for t in todos:
-            if isinstance(t, str) and t.strip() and f"- [ ] {t.strip()}" not in md:
-                md = md.rstrip() + f"\n- [ ] {t.strip()}\n"
+    t_lines = [f"- [ ] {str(t).strip()}" for t in todos if isinstance(t, str) and t.strip()]
+    md = insert_to_section(md, "待办", t_lines)
 
-    # ④ 下一步行动：只追加新项（去重），不替换已有内容
+    # ④ 下一步行动：插入「下一步行动」段内（去重，编号顺延）
     next_actions = summary.get("next_actions", [])
-    if isinstance(next_actions, list) and next_actions:
-        actions = [str(a).strip() for a in next_actions if str(a).strip()]
-        existing = set(re.findall(r"^\d+\. (.+)$", md, re.M))
-        # 去重：与已有条目（含去掉序号后的内容）都不重复才追加
-        new_items = []
-        for a in actions:
-            if a in existing:
-                continue
-            if any(a in e or e in a for e in existing):
-                continue
-            new_items.append(a)
-        if new_items:
-            if "## 下一步行动" in md:
-                md = md.rstrip() + "\n" + "\n".join(f"{len(existing)+i+1}. {a}" for i, a in enumerate(new_items[:3])) + "\n"
-            else:
-                block = "## 下一步行动\n\n" + "\n".join(f"{i+1}. {a}" for i, a in enumerate(new_items[:3]))
-                md = md.rstrip() + "\n\n" + block + "\n"
+    n_lines = [str(a).strip() for a in next_actions if isinstance(a, str) and str(a).strip()]
+    if n_lines:
+        pat = re.compile(r"^## 下一步行动\n", re.M)
+        m = pat.search(md)
+        if m:
+            end = re.search(r"^## ", md[m.end():], re.M)
+            tail = (m.end() + end.start()) if end else len(md)
+            segment = md[m.end():tail]
+            existing = [l.strip() for l in segment.splitlines() if l.strip()]
+            # 已有数字条目数
+            num = len([l for l in existing if re.match(r"^\d+\. ", l)])
+            new_items = []
+            for a in n_lines:
+                if any(a in e or e in a for e in existing):
+                    continue
+                new_items.append(a)
+            if new_items:
+                insert = "\n" + "\n".join(f"{num+i+1}. {a}" for i, a in enumerate(new_items[:3])) + "\n"
+                md = md[:tail] + insert + md[tail:]
+        else:
+            block = "## 下一步行动\n\n" + "\n".join(f"{i+1}. {a}" for i, a in enumerate(n_lines[:3]))
+            md = md.rstrip() + "\n\n" + block + "\n"
 
     md_path.write_text(md, encoding="utf-8")
 
