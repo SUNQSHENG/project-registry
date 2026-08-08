@@ -12,8 +12,8 @@
 ## 当前状态
 
 state: active
-- 阶段：设计定稿（grilling 完成），待执行升级
-- 最新进展：2026-08-08 grilling 全会话完成，决策全部确认；项目已注册（seq 25）
+- 阶段：升级完成，验收通过，待构建发布仓库
+- 最新进展：2026-08-08 自动验收完成——6 项问题全部处理（菜单歧义/会话回顾限定/打开项目定义/目录改名/备份合并清理）；隐私扫描零命中
 
 ## 架构决策记录
 
@@ -26,6 +26,10 @@ state: active
 - 2026-08-08 — 备份回滚三重保险：SKILL.md 备份到 backups/（跟随 10 份轮转规则）+ skill 目录 git init（.gitignore 排除备份和真实数据）+ 回滚=备份覆盖+删除新增文件
 - 2026-08-08 — 同步模式：本地 skill 目录 = 真源，发布仓库 = 快照，低频手动同步（原因：发布是低频动作，无需自动化）
 - 2026-08-08 — GitHub 前置：用户已有账号（Edge 浏览器登录态），发布走 Edge CDP；git 身份 admin@local 需改为账号身份
+- 2026-08-08 — 菜单操作编号字母化（N 新建/D 删除/C 检查），数字序号唯一语义=打开项目（原因：消除数字双语义歧义 bug）
+- 2026-08-08 — 会话回顾仅限工作类操作（打开/检测/修改/更新/保存/退出），查看/搜索/统计不触发（原因：轻操作强制回顾是体验负担）
+- 2026-08-08 — 新增「打开项目」操作定义（cd + 触发会话回顾）（原因：菜单有入口但操作详情缺失）
+- 2026-08-08 — 本地 skill 目录改名 project-registry，备份合并清理至轮转上限（原因：消除备份路径三分裂 + 历史残留超量）
 
 ## 项目范围与功能
 
@@ -45,15 +49,24 @@ state: active
 
 ## 待办
 
-- [ ] 备份现有 SKILL.md → `~/.claude/skills/project/backups/SKILL.md.<时间戳>.bak`
-- [ ] 本地 skill 目录 git init + 第一版 .gitignore（backups/、*.bak、PROJECTS.json）
-- [ ] 改造 SKILL.md：name 改 project-registry；去硬编码；吸收会话开始回顾 + 保存强制优先级下一步行动 + 可选文档骨架；示例名中性化；备份路径修正
-- [ ] 全文扫描验证（su2q/SunQs/真实项目名零命中）
-- [ ] 用户试用验收升级版（不满意 → 备份覆盖回滚）
-- [ ] 创建发布仓库结构：skills/project-registry/SKILL.md + README.md(英) + README.zh-CN.md + LICENSE(MIT) + .claude-plugin/marketplace.json + examples/PROJECTS.example.json(虚构) + .gitignore + docs/adr/
+- [x] 备份现有 SKILL.md → backups/（20260808_102846.bak）
+- [x] 本地 skill 目录 git init + 第一版 .gitignore（backups/、*.bak、PROJECTS.json）
+- [x] 改造 SKILL.md：name 改 project-registry；去硬编码；吸收会话开始回顾 + 保存强制优先级下一步行动 + 可选文档骨架；示例名中性化；备份路径修正
+- [x] 全文扫描验证（su2q/SunQs/真实项目名零命中）
+- [x] 用户试用验收升级版 + 自动验收全面排查（6 项问题全部修复）
+- [ ] 创建发布仓库结构：skills/project-registry/SKILL.md + README.md(英) + README.zh-CN.md + LICENSE(MIT) + .claude-plugin/marketplace.json + examples/PROJECTS.example.json(虚构) + .gitignore + docs/adr/ + SKILL.md 补 frontmatter license/metadata（P3）
+- [ ] 改本地 git 身份（admin@local → GitHub 账号身份，P10）
 - [ ] GitHub 发布：Edge CDP 建 Public 仓库 project-registry → push（推送前最终确认）
 - [ ] 安装自测：npx skills add 试装 + /plugin marketplace add 试装
 - [ ] 提交 CLAUDE.md 变更并保存项目
+
+## 下一步行动
+
+1. 构建发布仓库结构（含 P3 frontmatter 补全）
+2. 改 git 身份（P10）
+3. GitHub 发布（建 Public 仓库 + push，推送前最终确认）
+4. 安装自测（npx skills add + /plugin marketplace add）
+5. 提交 CLAUDE.md 并保存项目
 
 ## 已知问题
 
