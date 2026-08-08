@@ -3,7 +3,7 @@ name: project-registry
 description: "Use when the user asks to list, create, delete, modify, search, view project details, save a project, exit a project, roll back a version, or update project development records for projects managed in ~/projects/PROJECTS.json. Triggers: \"查看/列出项目\", \"新建/创建项目\", \"删除项目\", \"修改项目\", \"搜索项目\", \"项目详情\", \"项目统计\", \"项目清单\", \"项目列表\", \"保存项目\", \"退出\", \"返回\", \"更新记录\", \"开发记录\", \"项目上下文\", \"进度记录\", \"回滚\", \"恢复版本\", \"版本回滚\", \"撤销保存\", \"检查项目\", \"体检\", \"为什么\", \"归因\", \"决策背景\", \"audit\". English triggers: \"list/create/delete/save project\", \"project registry\", \"project status\", \"progress record\", \"project context\", \"rollback\", \"restore version\", \"why\", \"attribution\", \"audit\", \"project check\"."
 license: MIT License
 metadata:
-  version: "1.0.5"
+  version: "1.0.6"
 ---
 
 # project-registry
@@ -100,7 +100,7 @@ metadata:
 检查环境变量 `PR_API_BASE_URL` / `PR_API_KEY` / `PR_API_MODEL`（`printenv`）：
 
 > ⚠️ **强制提醒（无论是否配置 API，都必须告知用户一次）：自动摘要不能代替手动保存**
-> 层 2 自动摘要只是「实时保鲜」（增量合并），**不等于、也不能代替手动保存**。手动保存（保存/退出时强制更新）才是**权威整理**——全面回顾、补录决策、按优先级更新下一步行动。配了 API 的用户同样**必须**在保存/退出时手动整理，不可因自动摘要而跳过。
+> 层 2 自动摘要只是「实时保鲜」（增量合并），**不等于、也不能代替手动保存**。**手动保存 = 在对话中直接告诉 agent「保存」或「退出」**（没有按钮、没有命令，就是这么一句话）——触发时强制全面回顾、补录决策、按优先级更新下一步行动，才是**权威整理**。配了 API 的用户同样**必须**在保存/退出时手动整理，不可因自动摘要而跳过。
 
 - **未配置** → 卡片询问：「是否配置 API Key 启用自动摘要？」——**必须说明授权范围与功能价值**：
 
@@ -330,6 +330,8 @@ CLAUDE.md 初始模板见底部。
 ### 与手动保存的关系
 
 自动摘要 = **实时保鲜**（增量合并）；手动保存 = **权威整理**（全面回顾）——两者互补，**不可互相代替**：自动摘要不能跳过手动保存，手动保存也不受自动摘要影响。权威记录以手动保存为准。
+
+> **手动保存怎么操作？** 在对话中对 agent 说「保存」或「退出」即可——没有独立按钮或命令。agent 会执行权威整理（全面回顾 + 补录决策及原因 + 按优先级重排下一步行动）。**随时可以说**，不依赖层 1/层 2 是否启用。
 
 ## 📜 决策记录纪律（查必有据）
 

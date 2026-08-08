@@ -40,6 +40,8 @@ The three memory functions are deliberately non-overlapping: Claude Code's built
 
 **Fresh-keeping ≠ manual save.** Layer 2 auto-fresh is *incremental* — a real-time draft that keeps CLAUDE.md current between saves. **It cannot replace manual save.** Saving or exiting forces a full review: decisions get recorded with their WHY, next actions get re-prioritized. Auto-fresh keeps the record *fresh*; manual save keeps it *right*. The authoritative version is always the one you save manually.
 
+**How do I manually save?** Just tell the agent **"save"** or **"exit"** in the conversation — there's no button and no command, that's it. You can say it anytime; it works regardless of whether Layer 1/2 are enabled.
+
 ## Compared to alternatives
 
 | | project-registry | Claude Code auto-memory |
