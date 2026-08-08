@@ -42,7 +42,11 @@ The three memory functions are deliberately non-overlapping: Claude Code's built
 
 | | project-registry | Claude Code auto-memory | memory-mcp |
 |:---|:---:|:---:|:---:|
-| Project registry (CRUD/stats/rollback) | ✅ | ❌ | ❌ (path lookup only) |
+| Project registry (CRUD/stats) | ✅ | ❌ | ❌ (path lookup only) |
+| Session resume (recall last progress per project) | ✅ | ❌ | ❌ |
+| Decision attribution ("why X" traceable) | ✅ | ❌ | ❌ |
+| Project health check (batch audit CLAUDE.md/.git) | ✅ | ❌ | ❌ |
+| Version rollback (CLAUDE.md / files / registry) | ✅ | ❌ | partial (git snapshots) |
 | Project `CLAUDE.md` auto-fresh | ✅ (optional, any API) | ❌ (writes global memory dir) | ❌ (writes global memory) |
 | Transcript safety / recovery | ✅ seconds-level + rotation + git | partial | ✅ git snapshots |
 | Works in Chinese | ✅ | ✅ | ❌ |
