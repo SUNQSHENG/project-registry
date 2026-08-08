@@ -12,8 +12,8 @@
 ## 当前状态
 
 state: active
-- 阶段：**自动保存功能完成（v1.0.1 已发布）**
-- 最新进展：2026-08-08 自动保存实现完成——层1 机械快照（transcript-sync/session-end 脚本）+ 层3 通用 API 摘要（auto-summary，任意 OpenAI 兼容）+ 首次配置引导 + hooks 配置生效；隐私事故已处置（.memory 曾误提交→回退+gitignore+脚本修复）；推广拆分后见 project_registry_promo_20260808
+- 阶段：**自动保存完成并验证（v1.0.2）**——层1+层3 全链路跑通，提取质量优化两轮
+- 最新进展：2026-08-08 | 自动保存功能完成（层1 机械快照 + 层3 DeepSeek 自动摘要验证通过），提取质量优化（决策定义收紧/next_actions 追加去重），环境变量已配置（重启 Claude Code 后 hooks 生效）
 
 ## 架构决策记录
 
@@ -47,6 +47,8 @@ state: active
 - [✅已执行] 2026-08-08 — 层3 API 通用化：支持任意 OpenAI 兼容提供商 + 用户自己的 key（原因：不绑定单一厂商，降低安装门槛，优于 memory-mcp 的强制 Anthropic key；预期：任意兼容端点可插拔）
 - [✅已执行] 2026-08-08 — 首次使用配置引导（检查 PR_API_KEY → 卡片询问 → 引导设置/跳过记录）（原因：开源用户需要清晰的"配 key 有什么好处"决策；预期：只问一次，跳过不烦人）
 - [⚠️ 事故复盘] 2026-08-08 — **隐私事故**：session-end 脚本曾把 .memory/（对话原文 6MB）提交进 git（本地提交 b65460a，未推送）→ 已处置：git reset 回退 + .gitignore 加 .memory/ + 脚本 git add 白名单化（只 add CLAUDE.md/.gitignore）+ make_cards.py 本地路径加固（原因：教训——**自动脚本的 git 操作必须白名单，禁止批量 add**；预期：此类事故不再发生，发布前隐私扫描排除 .memory 已成惯例）
+- [✅已执行] 2026-08-08 — 层3 验证与提取质量优化两轮：①决策定义收紧（执行动作不提取，只提取影响方向/难逆转的真决策）②progress 格式统一（`日期 | 摘要`）③next_actions 改为**追加去重**（不整体替换，防吞手写内容）（原因：实测发现执行动作被误判为决策、下一步行动被覆盖丢失；预期：自动摘要与手动保存互补不互毁）
+- [✅已执行] 2026-08-08 — DeepSeek API 模型名坑：用户配置名 `deepseek-v4-flash[1m]`（Claude Code 网关名）对 API 无效，官方名为 `deepseek-v4-flash`——已修正写入环境变量（原因：实测 API 报 invalid_request_error；预期：环境变量配置文档需注明官方模型名）
 
 ## 项目范围与功能
 
@@ -89,8 +91,8 @@ state: active
 
 ## 下一步行动
 
-1. **配置 DeepSeek 环境变量**（自用启用层 3）：PR_API_BASE_URL / PR_API_KEY / PR_API_MODEL（key 从环境变量读，绝不入库）
-2. **实测验证**：hooks 触发（正常对话中观察 .memory/ 更新与自动提交）
+1. ✅ 环境变量已配置（2026-08-08：BASE_URL/KEY/MODEL=deepseek-v4-flash 写入 Windows 用户级）
+2. **重启 Claude Code 后实测 hooks**：观察 .memory/ 自动更新 + 自动摘要 + SessionEnd 提交
 3. 日常使用中持续验证，发现问题记录到本文件
 4. 响应开源 issue/PR 反馈
 5. 推广相关：见 project_registry_promo_20260808（已拆分）
