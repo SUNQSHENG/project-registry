@@ -88,15 +88,15 @@ Two layers, fully silent, run only inside `~/projects/` project directories:
 
 `.memory/` contains raw conversation - it is **gitignored** and never committed. Layer 1 keeps data safe even if you kill the terminal: nothing is ever lost.
 
-**Layer 3 - Auto-summary (optional, enabled by configuring an API key)**
+**Layer 2 - Auto-summary (optional, enabled by configuring an API key)**
 
 Extracts progress / decisions / todos / next actions from the conversation and merges them into CLAUDE.md automatically (throttled: >=10 new messages or >=10 minutes). Works with **any OpenAI-compatible API** - bring your own key:
 
 ```bash
-# example: DeepSeek (or OpenAI / Qwen / local Ollama - same shape)
-export PR_API_BASE_URL=https://api.deepseek.com/v1
-export PR_API_KEY=sk-your-key
-export PR_API_MODEL=deepseek-chat
+# any OpenAI-compatible API works (DeepSeek / OpenAI / Qwen / local Ollama - same shape)
+export PR_API_BASE_URL=https://your-provider.example.com/v1   # <-- replace with your provider base URL
+export PR_API_KEY=sk-your-key                                 # <-- your own key
+export PR_API_MODEL=your-model                                # <-- e.g. deepseek-v4-flash / gpt-4o-mini / qwen-plus
 ```
 
 Without a key, the skill still gives you Layer 1 (data safety) plus all core features; with a key you additionally get auto-fresh CLAUDE.md. On first use the skill asks whether you want to configure a key (skippable, asked once). Conversation is only sent to the endpoint you configure.

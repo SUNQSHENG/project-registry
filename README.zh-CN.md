@@ -86,15 +86,15 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 `.memory/` 含对话原文——已 gitignore，绝不进仓库。强杀终端也不丢数据。
 
-**层 3 自动摘要（可选，配置 API 后启用）**
+**层 2 自动摘要（可选，配置 API 后启用）**
 
 自动提取进展/决策/待办/下一步并合并更新 CLAUDE.md（节流：≥10 条新消息或 ≥10 分钟）。**任意 OpenAI 兼容 API**，用自己的 key：
 
 ```bash
-# 示例：DeepSeek（OpenAI/通义/本地 Ollama 同格式）
-export PR_API_BASE_URL=https://api.deepseek.com/v1
-export PR_API_KEY=sk-你的key
-export PR_API_MODEL=deepseek-chat
+# 任意 OpenAI 兼容 API 均可（DeepSeek / OpenAI / 通义 / 本地 Ollama 同格式）
+export PR_API_BASE_URL=https://你的提供商地址/v1   # <-- 替换为你的提供商 base URL
+export PR_API_KEY=sk-你的key                        # <-- 你自己的 key
+export PR_API_MODEL=你的模型名                      # <-- 如 deepseek-v4-flash / gpt-4o-mini / qwen-plus
 ```
 
 不配 key：层 1 数据安全 + 全部核心功能；配 key：额外获得 CLAUDE.md 实时保鲜。首次使用会询问是否配置（可跳过，只问一次）。对话只发送到你配置的端点。

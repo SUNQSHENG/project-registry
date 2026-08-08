@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-project-registry · 层3 通用 API 自动摘要（Stop hook 调用，可选）
+project-registry · 层2 通用 API 自动摘要（Stop hook 调用，可选）
 从 transcript 增量提取进展/决策/待办/下一步，合并更新 CLAUDE.md。
 
 配置（环境变量，任意 OpenAI 兼容提供商）：
