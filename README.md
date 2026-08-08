@@ -75,6 +75,12 @@ New project structure:
 
 `CLAUDE.md` is the heart of it — Claude Code auto-loads it every session, so long-running projects never lose context.
 
+## Demo
+
+![project-registry demo](docs/screenshot.png)
+
+*Rendered with fictional data: project list, menu, session resume and attribution triggers. UI is Chinese-first; all triggers work in English too.*
+
 ## Example registry
 
 See [examples/PROJECTS.example.json](examples/PROJECTS.example.json) for a sample registry with fictional projects.
