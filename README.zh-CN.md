@@ -73,6 +73,32 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 `CLAUDE.md` 是核心——Claude Code 每次会话自动加载它，长项目不会丢失上下文。
 
+## 自动保存（hooks，静默执行）
+
+两层机制，全部后台静默，只在 `~/projects/` 项目目录生效：
+
+**层 1 机械快照（零依赖，默认开启）**
+
+| Hook | 动作 |
+|:---|:---|
+| `Stop`（每次响应后） | transcript 同步到 `<项目>/.memory/`（秒级） |
+| `SessionEnd` | CLAUDE.md 备份（10 份轮转）+ git 提交 |
+
+`.memory/` 含对话原文——已 gitignore，绝不进仓库。强杀终端也不丢数据。
+
+**层 3 自动摘要（可选，配置 API 后启用）**
+
+自动提取进展/决策/待办/下一步并合并更新 CLAUDE.md（节流：≥10 条新消息或 ≥10 分钟）。**任意 OpenAI 兼容 API**，用自己的 key：
+
+```bash
+# 示例：DeepSeek（OpenAI/通义/本地 Ollama 同格式）
+export PR_API_BASE_URL=https://api.deepseek.com/v1
+export PR_API_KEY=sk-你的key
+export PR_API_MODEL=deepseek-chat
+```
+
+不配 key：层 1 数据安全 + 全部核心功能；配 key：额外获得 CLAUDE.md 实时保鲜。首次使用会询问是否配置（可跳过，只问一次）。对话只发送到你配置的端点。
+
 ## 示例注册表
 
 见 [examples/PROJECTS.example.json](examples/PROJECTS.example.json)（虚构数据示例）。

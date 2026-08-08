@@ -3,7 +3,7 @@ name: project-registry
 description: "Use when the user asks to list, create, delete, modify, search, view project details, save a project, exit a project, roll back a version, or update project development records for projects managed in ~/projects/PROJECTS.json. Triggers: \"查看/列出项目\", \"新建/创建项目\", \"删除项目\", \"修改项目\", \"搜索项目\", \"项目详情\", \"项目统计\", \"项目清单\", \"项目列表\", \"保存项目\", \"退出\", \"返回\", \"更新记录\", \"开发记录\", \"项目上下文\", \"进度记录\", \"回滚\", \"恢复版本\", \"版本回滚\", \"撤销保存\", \"检查项目\", \"体检\", \"为什么\", \"归因\", \"决策背景\", \"audit\". English triggers: \"list/create/delete/save project\", \"project registry\", \"project status\", \"progress record\", \"project context\", \"rollback\", \"restore version\", \"why\", \"attribution\", \"audit\", \"project check\"."
 license: MIT License
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # project-registry
@@ -74,6 +74,27 @@ metadata:
 > ⚠️ **保存/退出时会自动更新 CLAUDE.md**（强制规则）
 ```
 
+## ⚙️ 首次配置引导（API Key 可选）
+
+第一次进入 skill 时：
+
+1. 检查环境变量 `PR_API_BASE_URL` / `PR_API_KEY` / `PR_API_MODEL` 是否配置（`printenv`）
+2. 未配置 → **AskUserQuestion 卡片**询问：「是否配置 API Key 启用自动摘要保存？」
+   - **配置（推荐）** → 引导设置三个环境变量（README 有各提供商示例：DeepSeek / OpenAI / 通义 / Ollama 本地）
+   - **跳过** → 写入 `<skill 目录>/config.json`（记"已跳过"，后续不再问）
+   - **了解更多** → 展示功能对比表
+3. 配置后立即生效（无需重启会话）
+
+**功能对比：**
+
+| 能力 | 不配 Key | 配 Key |
+|:---|:---:|:---:|
+| 数据安全（秒级备份 + 会话结束自动提交） | ✅ | ✅ |
+| 全部核心功能（注册表/会话恢复/归因/回滚/检查） | ✅ | ✅ |
+| 自动摘要（对话自动提炼 → CLAUDE.md 实时更新） | ❌ | ✅ |
+
+> 随时说「配置 API」可重新引导。
+
 ## 🔍 自动识别当前项目
 
 > 每次进入 skill 时已自动 `cd ~`。需要定位项目的操作（检测/修改/保存/更新记录等）自动识别当前目录：
@@ -121,7 +142,7 @@ metadata:
 ### 🆕 新建项目
 
 1. 询问项目名称 + 背景说明，生成 key：`<英文缩写>_<YYYYMMDD>`
-2. 备份 PROJECTS.json → 创建目录 → 写入 README.md + CLAUDE.md
+2. 备份 PROJECTS.json → 创建目录 → 写入 README.md + CLAUDE.md + `.gitignore`（含 `PROJECTS.json`、`backups/`、`*.bak`、`.memory/`）
 3. 注册到 PROJECTS.json（seq = nextSeq, 之后 nextSeq +1）
 4. `cd` 到项目目录，`git init`
 5. 必须询问是否引入 grill-with-docs skill（**AskUserQuestion 卡片：引入 / 不引入**）：
@@ -252,6 +273,31 @@ CLAUDE.md 初始模板见底部。
 ```
 
 清理规则：按文件名**末尾**的 `YYYYMMDD_HHMMSS` 提取时间戳排序（注意：`CLAUDE.md.<项目名>.<时间戳>.bak` 这类特殊命名的备份，时间戳在末尾，不能用整名字符串排序），保留最晚的 10 份，其余删除。
+
+## 🔁 自动保存（hooks，静默执行）
+
+两层机制，全部后台静默、失败静默重试、只在 `~/projects/` 项目目录生效。
+
+### 层 1 机械快照（零依赖，默认开启）
+
+| Hook | 动作 |
+|:---|:---|
+| Stop（每次响应后） | transcript 同步到 `<项目>/.memory/transcript-latest.jsonl`（秒级） |
+| SessionEnd（会话结束） | CLAUDE.md 备份（10 份轮转）+ git 提交（有变更才提交） |
+
+- ⚠️ **隐私**：`.memory/` 含对话原文——**必须 gitignore 排除**（新建项目自动生成 .gitignore 含 `.memory/`），绝不进仓库
+- 强杀终端时 SessionEnd 不触发，但 Stop 的秒级同步仍在——数据不丢
+
+### 层 3 自动摘要（可选，配置 API 后启用）
+
+- **触发**：节流控制（≥10 条新消息 或 ≥10 分钟）——不每次响应都调 API
+- **流程**：读 `.memory/` 增量 → 调用 `PR_API_BASE_URL`（**任意 OpenAI 兼容提供商**）→ 提取进展/决策/待办/下一步 → **合并**更新 CLAUDE.md（追加决策/更新进展/待办/下一步）
+- **配置**（环境变量）：`PR_API_BASE_URL` / `PR_API_KEY` / `PR_API_MODEL`（不配置自动跳过）
+- **隐私**：对话只发送到用户自己配置的端点；key 从环境变量读，永不硬编码
+
+### 与手动保存的关系
+
+自动摘要 = **实时保鲜**（增量合并）；手动保存 = **权威整理**（全面回顾）——两者兼容互补。
 
 ## 📜 决策记录纪律（查必有据）
 
