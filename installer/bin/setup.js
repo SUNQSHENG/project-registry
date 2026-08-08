@@ -4,7 +4,7 @@
  *
  * What it does:
  *   1. Copies the skill into ~/.claude/skills/project-registry/
- *   2. Adds auto-save hooks (Stop + SessionEnd) to ~/.claude/settings.json
+ *   2. Adds auto-backup hooks (Stop + SessionEnd) to ~/.claude/settings.json
  *      — after showing exactly what gets authorized and what you get
  *
  * Idempotent: re-running never duplicates hooks.
@@ -185,7 +185,7 @@ async function main() {
 
   const { settings, existed } = loadSettings();
   if (hasOurHooks(settings)) {
-    console.log('· auto-save hooks already configured — nothing to do.');
+    console.log('· auto-backup hooks already configured — nothing to do.');
     console.log('\n✅ Done. Restart Claude Code, then say "list projects" or "/project-registry".');
     return;
   }
@@ -193,7 +193,7 @@ async function main() {
   console.log(AUTHORIZE_TEXT);
 
   if (!yes) {
-    const answer = await ask('Enable auto-save hooks? [Y/n] ');
+    const answer = await ask('Enable auto-backup hooks? [Y/n] ');
     if (answer !== '' && answer !== 'y' && answer !== 'yes') {
       console.log('· skipped — hooks not added. You can re-run any time, or say "save project" manually.');
       return;
@@ -208,7 +208,7 @@ async function main() {
 
    · say "list projects" or "/project-registry" to see the menu
    · create a project: "new project"
-   · your data is now auto-saved — nothing can be lost
+   · your data is now auto-backed-up — nothing can be lost
 
    Remove hooks anytime:  npx @sunqsheng/project-registry --remove
 `);

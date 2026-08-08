@@ -71,7 +71,7 @@ def git_commit(project_dir: Path):
             capture_output=True, timeout=10,
         )
         subprocess.run(
-            ["git", "-C", str(project_dir), "commit", "-m", "自动保存：会话结束收尾（CLAUDE.md 变更）"],
+            ["git", "-C", str(project_dir), "commit", "-m", "自动备份：会话结束收尾（CLAUDE.md 变更）"],
             capture_output=True, timeout=10,
         )
     except (subprocess.TimeoutExpired, OSError):

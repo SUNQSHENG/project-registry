@@ -13,7 +13,7 @@ Personal developers juggle several projects at once — work, side projects, lea
 | "Which projects do I even have?" | **One registry** — every project in a single `~/projects/PROJECTS.json`, with CRUD, search and stats |
 | "What did I do last time?" | **AI-readable logs** — each project has a `CLAUDE.md` (auto-loaded every session) with status, decisions, todos and **prioritized next actions** |
 | "Why did I choose X?" | **Decision attribution** — "why X" returns the decision timeline with reasons and impact |
-| "I forgot to save" | **Auto-save hooks** — transcript snapshots every response, backup + commit on exit (Layer 1, zero dependencies) |
+| "I forgot to save" | **Auto-backup hooks** — transcript snapshots every response, backup + commit on exit (Layer 1, zero dependencies) |
 | "CLAUDE.md went stale" | **Fresh-keeping (optional)** — an LLM of your choice extracts progress into CLAUDE.md (Layer 2) |
 | "I broke something" | **Rollback** — diff-confirmed version restore for CLAUDE.md, files and the registry |
 
@@ -63,7 +63,7 @@ The three memory functions are deliberately non-overlapping: Claude Code's built
 | 📜 Decision discipline | Every decision records WHY (mandatory) — traceable months later |
 | 🔎 Decision attribution | "Why X" → decision timeline + reason chain + status + impact |
 | 💾 Save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
-| 🔁 Auto-save (hooks) | Layer 1: transcript snapshot + backup/commit (silent, zero deps) |
+| 🔁 Auto-backup (hooks) | Layer 1: transcript snapshot + backup/commit (silent, zero deps) |
 | 🔁 Fresh-keeping (API) | Layer 2: conversation auto-extracted into CLAUDE.md (optional) |
 | 🔍 MD health check | Batch-verify `CLAUDE.md` + `.git` exist for every registered project |
 | ↩️ Version rollback | CLAUDE.md / project files / registry — diff confirm + new commit |
@@ -81,7 +81,7 @@ npx @sunqsheng/project-registry
 npm i -g @sunqsheng/project-registry && project-registry
 ```
 
-Copies the skill and configures auto-save hooks with an authorization prompt. Idempotent; remove with `project-registry --remove`.
+Copies the skill and configures auto-backup hooks with an authorization prompt. Idempotent; remove with `project-registry --remove`.
 
 ### Option 2: npx skills
 
@@ -114,7 +114,7 @@ Restart Claude Code. Then type "list projects" — or simply use `/project-regis
 2. Menu shows all projects with numbers:
    - type a number (1-99) → open that project (session resume kicks in)
    - N → new project     D → delete project     C → health check
-3. Work in the project. Auto-save runs silently in the background — you never need to "remember to save"
+3. Work in the project. Auto-backup keeps data safe silently — but manual save is still required for the authoritative record
 4. When done: "save project" or "exit" (forces a full CLAUDE.md review)
 5. Later: "why X" → decision attribution · "rollback" → restore a version · "check projects" → health check
 ```
@@ -127,13 +127,13 @@ New project structure:
   <project-key>/
     README.md              # for humans: background & scope
     CLAUDE.md              # for AI: status, decisions, todos, next actions
-    .memory/               # auto-save transcripts (gitignored, never committed)
+    .memory/               # auto-backup transcripts (gitignored, never committed)
     .git/                  # git init automatically (CLAUDE.md must be at .git level)
 ```
 
 `CLAUDE.md` is the heart of it — Claude Code auto-loads it every session, so long-running projects never lose context.
 
-## Auto-save (hooks, silent)
+## Auto-backup (hooks, silent)
 
 Two layers, fully silent, run only inside `~/projects/` project directories:
 
@@ -172,7 +172,7 @@ Two layers, fully silent, run only inside `~/projects/` project directories:
 }
 ```
 
-On first use the skill will ask whether you want to enable auto-save — it explains exactly what gets authorized (hooks in your `settings.json`, local-only, nothing leaves your machine) and what you get (nothing is ever lost). Skippable, asked once.
+On first use the skill will ask whether you want to enable auto-backup — it explains exactly what gets authorized (hooks in your `settings.json`, local-only, nothing leaves your machine) and what you get (nothing is ever lost). Skippable, asked once.
 
 **Layer 2 - Fresh-keeping (optional, bring your own key)**
 
@@ -194,7 +194,7 @@ See [examples/PROJECTS.example.json](examples/PROJECTS.example.json) for a sampl
 ## Development
 
 - `skills/project-registry/SKILL.md` — the skill itself (self-contained, no dependencies)
-- `skills/project-registry/scripts/` — auto-save hooks (transcript-sync / auto-summary / session-end)
+- `skills/project-registry/scripts/` — auto-backup hooks (transcript-sync / auto-summary / session-end)
 - Design decisions: [docs/adr/](docs/adr/)
 
 ## License

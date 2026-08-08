@@ -11,7 +11,7 @@
 | "我到底有哪些项目？" | **单一注册表**——所有项目登记在一个 `~/projects/PROJECTS.json`，增删改查 + 搜索 + 统计 |
 | "上次做到哪了？" | **AI 可读的开发记录**——每个项目有 `CLAUDE.md`（每次会话自动加载），记录状态、决策、待办和**按优先级的下一步行动** |
 | "当初为什么选 X？" | **决策归因**——"为什么 X" 返回决策时间线（原因 + 影响） |
-| "我忘了保存" | **自动保存 hooks**——每次响应后 transcript 秒级快照，退出时备份 + 提交（层 1，零依赖） |
+| "我忘了保存" | **自动备份 hooks**——每次响应后 transcript 秒级快照，退出时备份 + 提交（层 1，零依赖） |
 | "CLAUDE.md 过期了" | **保鲜（可选）**——你指定的 LLM 把对话提炼进 CLAUDE.md（层 2） |
 | "我改坏了东西" | **版本回滚**——CLAUDE.md / 项目文件 / 注册表差异确认后恢复 |
 
@@ -60,8 +60,8 @@
 | 🧭 会话恢复 | 进入项目 → 回顾上次进展 → 确认续接 |
 | 📜 决策纪律 | 每条决策必写原因（强制）——三个月后可追溯 |
 | 🔎 决策归因 | "为什么 X" → 决策时间线 + 原因链 + 状态 + 影响 |
-| 💾 退出自动保存 | 保存/退出**强制**更新 CLAUDE.md 并写出按优先级的下一步行动 |
-| 🔁 自动保存（hooks） | 层1：transcript 快照 + 备份/提交（静默、零依赖） |
+| 💾 退出保存 | 保存/退出**强制**更新 CLAUDE.md 并写出按优先级的下一步行动 |
+| 🔁 自动备份（hooks） | 层1：transcript 快照 + 备份/提交（静默、零依赖） |
 | 🔁 保鲜（API） | 层2：对话自动提炼进 CLAUDE.md（可选） |
 | 🔍 MD 健康检查 | 批量检查所有注册项目的 CLAUDE.md + .git |
 | ↩️ 版本回滚 | CLAUDE.md / 项目文件 / 注册表——差异确认 + 新提交 |
@@ -79,7 +79,7 @@ npx @sunqsheng/project-registry
 npm i -g @sunqsheng/project-registry && project-registry
 ```
 
-复制 skill 并带授权提示配置自动保存 hooks。幂等；`project-registry --remove` 可移除。
+复制 skill 并带授权提示配置自动备份 hooks。幂等；`project-registry --remove` 可移除。
 
 ### 方式二：npx skills
 
@@ -112,7 +112,7 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 2. 菜单列出全部项目：
    - 输入数字序号（1-99）→ 打开项目（触发会话恢复）
    - N → 新建项目   D → 删除项目   C → 健康检查
-3. 在项目内工作。**自动保存后台静默运行**——不需要"记得保存"
+3. 在项目内工作。**自动备份静默守护数据安全**——但权威记录仍需"保存项目"手动整理
 4. 结束时："保存项目" 或 "退出"（强制全面回顾 CLAUDE.md）
 5. 之后："为什么 X" → 归因 · "回滚" → 恢复版本 · "检查项目" → 健康检查
 ```
@@ -125,13 +125,13 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
   <project-key>/
     README.md              # 面向人：背景和范围
     CLAUDE.md              # 面向 AI：状态、决策、待办、下一步行动
-    .memory/               # 自动保存 transcript（gitignore，绝不提交）
+    .memory/               # 自动备份 transcript（gitignore，绝不提交）
     .git/                  # 自动 git init（CLAUDE.md 生效前提）
 ```
 
 `CLAUDE.md` 是核心——Claude Code 每次会话自动加载它，长项目不会丢失上下文。
 
-## 自动保存（hooks，静默执行）
+## 自动备份（hooks，静默执行）
 
 两层机制，全部后台静默，只在 `~/projects/` 项目目录生效：
 
@@ -170,7 +170,7 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 }
 ```
 
-首次使用 skill 会询问是否启用自动保存——**讲清楚授权什么**（向你的 settings.json 添加 hooks，仅本地，不向任何外部服务发送数据）**和带来什么**（数据永不丢）。可跳过，只问一次。
+首次使用 skill 会询问是否启用自动备份——**讲清楚授权什么**（向你的 settings.json 添加 hooks，仅本地，不向任何外部服务发送数据）**和带来什么**（数据永不丢）。可跳过，只问一次。
 
 **层 2 保鲜（可选，用自己的 key）**
 
@@ -192,7 +192,7 @@ export PR_API_MODEL=你的模型名                      # <-- 如 deepseek-v4-f
 ## 开发
 
 - `skills/project-registry/SKILL.md` — 技能本体（自包含，零依赖）
-- `skills/project-registry/scripts/` — 自动保存 hooks（transcript-sync / auto-summary / session-end）
+- `skills/project-registry/scripts/` — 自动备份 hooks（transcript-sync / auto-summary / session-end）
 - 设计决策： [docs/adr/](docs/adr/)
 
 ## 许可证

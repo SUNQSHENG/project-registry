@@ -3,7 +3,7 @@ name: project-registry
 description: "Use when the user asks to list, create, delete, modify, search, view project details, save a project, exit a project, roll back a version, or update project development records for projects managed in ~/projects/PROJECTS.json. Triggers: \"查看/列出项目\", \"新建/创建项目\", \"删除项目\", \"修改项目\", \"搜索项目\", \"项目详情\", \"项目统计\", \"项目清单\", \"项目列表\", \"保存项目\", \"退出\", \"返回\", \"更新记录\", \"开发记录\", \"项目上下文\", \"进度记录\", \"回滚\", \"恢复版本\", \"版本回滚\", \"撤销保存\", \"检查项目\", \"体检\", \"为什么\", \"归因\", \"决策背景\", \"audit\". English triggers: \"list/create/delete/save project\", \"project registry\", \"project status\", \"progress record\", \"project context\", \"rollback\", \"restore version\", \"why\", \"attribution\", \"audit\", \"project check\"."
 license: MIT License
 metadata:
-  version: "1.0.3"
+  version: "1.0.5"
 ---
 
 # project-registry
@@ -74,7 +74,7 @@ metadata:
 > ⚠️ **保存/退出时会自动更新 CLAUDE.md**（强制规则）
 ```
 
-## ⚙️ 首次配置引导（自动保存 + API Key 可选）
+## ⚙️ 首次配置引导（自动备份 + API Key 可选）
 
 第一次进入 skill 时，**逐项检查两项配置**（每项都用 AskUserQuestion 卡片询问，跳过即记录、只问一次）：
 
@@ -82,7 +82,7 @@ metadata:
 
 检查 `~/.claude/settings.json` 是否包含本 skill 的 scripts（transcript-sync / auto-summary / session-end）：
 
-- **未启用** → 卡片询问：「是否启用自动保存（层 1 机械快照）？」——**必须说明授权范围与功能价值**：
+- **未启用** → 卡片询问：「是否启用自动备份（层 1 机械快照）？」——**必须说明授权范围与功能价值**：
 
   > ⚠️ **授权内容**：在你的 `~/.claude/settings.json` 添加 3 个 hooks（Stop×2 + SessionEnd）。
   > 仅影响 `~/projects/` 下的项目目录，纯本地静默执行，**不向任何外部服务发送数据**。
@@ -99,7 +99,7 @@ metadata:
 
 检查环境变量 `PR_API_BASE_URL` / `PR_API_KEY` / `PR_API_MODEL`（`printenv`）：
 
-> ⚠️ **强制提醒（无论是否配置 API，都必须告知用户一次）：自动 API 保存不能代替手动保存**
+> ⚠️ **强制提醒（无论是否配置 API，都必须告知用户一次）：自动摘要不能代替手动保存**
 > 层 2 自动摘要只是「实时保鲜」（增量合并），**不等于、也不能代替手动保存**。手动保存（保存/退出时强制更新）才是**权威整理**——全面回顾、补录决策、按优先级更新下一步行动。配了 API 的用户同样**必须**在保存/退出时手动整理，不可因自动摘要而跳过。
 
 - **未配置** → 卡片询问：「是否配置 API Key 启用自动摘要？」——**必须说明授权范围与功能价值**：
@@ -125,7 +125,7 @@ metadata:
 | 数据安全（秒级备份 + 会话结束自动提交） | ❌ | ✅ | ✅ |
 | 自动摘要（对话自动提炼 → CLAUDE.md 实时更新） | ❌ | ❌ | ✅ |
 
-> 随时说「配置自动保存」/「配置 API」可重新引导。
+> 随时说「配置自动备份」/「配置 API」可重新引导。
 
 ## 🔍 自动识别当前项目
 
@@ -306,7 +306,7 @@ CLAUDE.md 初始模板见底部。
 
 清理规则：按文件名**末尾**的 `YYYYMMDD_HHMMSS` 提取时间戳排序（注意：`CLAUDE.md.<项目名>.<时间戳>.bak` 这类特殊命名的备份，时间戳在末尾，不能用整名字符串排序），保留最晚的 10 份，其余删除。
 
-## 🔁 自动保存（hooks，静默执行）
+## 🔁 自动备份（hooks，静默执行）
 
 两层机制，全部后台静默、失败静默重试、只在 `~/projects/` 项目目录生效。
 
