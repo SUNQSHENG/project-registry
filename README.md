@@ -30,22 +30,22 @@ Claude Code loses context between sessions. You start a project, work for a whil
 ### Option 1: npx skills (recommended)
 
 ```bash
-npx skills add <owner>/project-registry
+npx skills add SUNQSHENG/project-registry
 # or install globally
-npx skills add <owner>/project-registry -g
+npx skills add SUNQSHENG/project-registry -g
 ```
 
 ### Option 2: Claude Code plugin marketplace
 
 ```
-/plugin marketplace add <owner>/project-registry
-/plugin install project-registry@<owner>
+/plugin marketplace add SUNQSHENG/project-registry
+/plugin install project-registry@SUNQSHENG
 ```
 
 ### Option 3: Manual
 
 ```bash
-git clone https://github.com/<owner>/project-registry
+git clone https://github.com/SUNQSHENG/project-registry
 cp -r project-registry/skills/project-registry ~/.claude/skills/
 ```
 

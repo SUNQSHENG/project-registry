@@ -28,22 +28,22 @@ Claude Code 会跨会话丢失上下文。项目做了几天，下次回来 Clau
 ### 方式一：npx skills（推荐）
 
 ```bash
-npx skills add <owner>/project-registry
+npx skills add SUNQSHENG/project-registry
 # 或全局安装
-npx skills add <owner>/project-registry -g
+npx skills add SUNQSHENG/project-registry -g
 ```
 
 ### 方式二：Claude Code 插件市场
 
 ```
-/plugin marketplace add <owner>/project-registry
-/plugin install project-registry@<owner>
+/plugin marketplace add SUNQSHENG/project-registry
+/plugin install project-registry@SUNQSHENG
 ```
 
 ### 方式三：手动
 
 ```bash
-git clone https://github.com/<owner>/project-registry
+git clone https://github.com/SUNQSHENG/project-registry
 cp -r project-registry/skills/project-registry ~/.claude/skills/
 ```
 
