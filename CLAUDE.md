@@ -12,8 +12,8 @@
 ## 当前状态
 
 state: active
-- 阶段：升级完成，验收通过，待构建发布仓库
-- 最新进展：2026-08-08 自动验收完成——6 项问题全部处理（菜单歧义/会话回顾限定/打开项目定义/目录改名/备份合并清理）；隐私扫描零命中
+- 阶段：发布仓库构建完成，**发布暂缓（用户决定）**，自用版已上线运行
+- 最新进展：2026-08-08 自动验收完成（6 项问题全部处理）；发布仓库构建完成（fc6957b，隐私扫描零命中）；git 身份待定；用户决定先不发布
 
 ## 架构决策记录
 
@@ -54,19 +54,17 @@ state: active
 - [x] 改造 SKILL.md：name 改 project-registry；去硬编码；吸收会话开始回顾 + 保存强制优先级下一步行动 + 可选文档骨架；示例名中性化；备份路径修正
 - [x] 全文扫描验证（个人路径/用户名/真实项目名零命中）
 - [x] 用户试用验收升级版 + 自动验收全面排查（6 项问题全部修复）
-- [ ] 创建发布仓库结构：skills/project-registry/SKILL.md + README.md(英) + README.zh-CN.md + LICENSE(MIT) + .claude-plugin/marketplace.json + examples/PROJECTS.example.json(虚构) + .gitignore + docs/adr/ + SKILL.md 补 frontmatter license/metadata（P3）
-- [ ] 改本地 git 身份为 GitHub 账号身份（P10）
-- [ ] GitHub 发布：建 Public 仓库 project-registry → push（推送前最终确认）
-- [ ] 安装自测：npx skills add 试装 + /plugin marketplace add 试装
-- [ ] 提交 CLAUDE.md 变更并保存项目
+- [x] 创建发布仓库结构：skills/project-registry/SKILL.md + README.md(英) + README.zh-CN.md + LICENSE(MIT) + .claude-plugin/marketplace.json + examples/PROJECTS.example.json(虚构) + .gitignore + docs/adr/ + SKILL.md 补 frontmatter license/metadata（P3）
+- [x] 提交 CLAUDE.md 变更并保存项目（2026-08-08 首次保存）
+- [ ] 改本地 git 身份为 GitHub 账号身份（P10，待用户提供邮箱偏好：noreply 或真实邮箱）
+- [ ] GitHub 发布（⏸️ 暂缓，用户决定先不发布；随时可恢复——建 Public 仓库 + push 前最终确认）
+- [ ] 安装自测：npx skills add 试装 + /plugin marketplace add 试装（发布时一并做）
 
 ## 下一步行动
 
-1. 构建发布仓库结构（含 P3 frontmatter 补全）
-2. 改 git 身份（P10）
-3. GitHub 发布（建 Public 仓库 + push，推送前最终确认）
-4. 安装自测（npx skills add + /plugin marketplace add）
-5. 提交 CLAUDE.md 并保存项目
+1. （待用户决策）git 身份邮箱偏好确认后，改本地 git 身份
+2. （⏸️ 暂缓）GitHub 发布——建 Public 仓库 + push + 安装自测
+3. 日常使用中持续验证升级版（会话回顾/保存流程），发现问题记录到本文件
 
 ## 已知问题
 
