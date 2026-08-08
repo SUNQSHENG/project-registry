@@ -1,0 +1,21 @@
+{
+  "description": "项目清单 — 所有项目在此登记",
+  "updated": "2026-03-20",
+  "nextSeq": 3,
+  "projects": [
+    {
+      "seq": 1,
+      "key": "pet_hospital_crm_20260301",
+      "name": "宠物医院CRM",
+      "status": "已完成",
+      "created": "2026-03-01"
+    },
+    {
+      "seq": 2,
+      "key": "gym_members_app_20260315",
+      "name": "健身房会员App",
+      "status": "进行中",
+      "created": "2026-03-15"
+    }
+  ]
+}

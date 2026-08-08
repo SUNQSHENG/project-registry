@@ -1,0 +1,8 @@
+# 个人数据 — 永不提交（隐私防线）
+PROJECTS.json
+backups/
+*.bak
+
+# 系统/编辑器
+.DS_Store
+Thumbs.db

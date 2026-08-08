@@ -1,0 +1,10 @@
+{
+  "name": "project-registry",
+  "description": "Personal project registry with AI-readable development logs: CRUD, session resume, backup rotation, MD health check.",
+  "skills": [
+    {
+      "name": "project-registry",
+      "path": "skills/project-registry"
+    }
+  ]
+}

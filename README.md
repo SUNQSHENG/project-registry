@@ -1,31 +1,89 @@
 # project-registry
 
-## 项目背景
+A Claude Code skill that manages a **personal project registry** with per-project **AI-readable development logs** — list, create, delete, save, resume and health-check all your projects from one menu.
 
-将自用 Claude Code skill `project`（项目管理：项目注册表 PROJECTS.json + 增删改查 + 开发记录 CLAUDE.md）升级为更成熟、可公开的通用版本，并发布到 GitHub 获取星星。
+> 中文说明见 [README.zh-CN.md](README.zh-CN.md)
 
-设计参考：[Keiji-Miyake/agent-skills](https://github.com/Keiji-Miyake/agent-skills) 的 session-support（原 dev-support）——短会话优化、上下文保持、文档驱动开发、ADR 支持。
+## Why this skill
 
-## 项目目标
+Claude Code loses context between sessions. You start a project, work for a while, come back next week — and Claude has no idea what happened, what to do next, or even which projects exist. `project-registry` fixes this with:
 
-1. **升级**：吸收 session-support 三项能力（会话开始回顾 / 保存时强制写优先级下一步行动 / 代码类项目可选文档骨架），保留现有全部能力
-2. **通用化**：单版本策略——同一份 skill 既自用又开源，清除全部个人硬编码
-3. **开源**：发布到 GitHub（Public），支持 `npx skills add` + `/plugin marketplace add` 双分发路径，获取星星
-4. **安全**：三道隐私防线，绝不泄露真实业务项目数据
+- **One registry**: every project registered in a single `~/projects/PROJECTS.json`, with auto sequence management
+- **AI-readable logs**: each project has a `CLAUDE.md` (auto-loaded by Claude every session) recording status, decisions, todos and **prioritized next actions**
+- **Session resume**: entering a project recalls last progress and asks what to continue from — no more cold starts
+- **Safety by default**: automatic backups with rotation (10 per type), `git init` per project, confirmation before any deletion
 
-## 项目范围
+## Features
 
-| 包含 | 不包含 |
+| Feature | What it does |
 |:---|:---|
-| SKILL.md 升级与通用化 | PROJECTS.json（真实数据） |
-| README 中英双语、LICENSE、marketplace.json、examples 虚构示例 | backups/ 备份目录 |
-| 1-2 个 ADR（记录关键决策） | 任何 `C:\Users\su2q` / `SunQs` 硬编码 |
-| GitHub 发布与安装自测 | 多 skill 集合（只发一个 skill） |
+| 📋 Project registry | CRUD + search + stats over `~/projects/PROJECTS.json` |
+| 🧭 Session resume | Entering a project → recall last progress → confirm what to continue |
+| 💾 Auto-save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
+| 🔍 MD health check | Batch-verify `CLAUDE.md` + `.git` exist for every registered project |
+| 🛡️ Backup rotation | PROJECTS.json / CLAUDE.md / SKILL.md backups, keep latest 10 each |
+| 📁 Optional doc skeleton | Code projects: optional `docs/SPEC.md` + `DESIGN.md` per feature |
+| 🌍 Universal | No hardcoded paths, works for business and code projects alike |
 
-## 关键决策摘要（详见 CLAUDE.md）
+## Install
 
-- 单版本通用化，不做双版本分叉
-- 跳过会话时长管理（业务场景不需要）
-- 命名 `project-registry`（仓库名 + skill name）
-- SKILL.md 中文，README 英文主位 + 中文副位
-- 本地目录为真源，发布仓库为快照
+### Option 1: npx skills (recommended)
+
+```bash
+npx skills add <owner>/project-registry
+# or install globally
+npx skills add <owner>/project-registry -g
+```
+
+### Option 2: Claude Code plugin marketplace
+
+```
+/plugin marketplace add <owner>/project-registry
+/plugin install project-registry@<owner>
+```
+
+### Option 3: Manual
+
+```bash
+git clone https://github.com/<owner>/project-registry
+cp -r project-registry/skills/project-registry ~/.claude/skills/
+```
+
+Restart Claude Code. Then type "查看项目" or "list projects" — or simply use `/project-registry`.
+
+## Quick start
+
+```text
+1. Trigger the skill: "查看项目" / "list projects" / /project-registry
+2. Menu shows all projects with numbers:
+   - type a number (1-99) → open that project (session resume kicks in)
+   - N → new project     D → delete project     C → health check
+3. Work in the project. When done: "保存项目" or "退出"
+4. Save/exit auto-updates CLAUDE.md with progress + prioritized next actions
+```
+
+New project structure:
+
+```
+~/projects/
+  PROJECTS.json            # registry (single source of truth)
+  <project-key>/
+    README.md              # for humans: background & scope
+    CLAUDE.md              # for AI: status, decisions, todos, next actions
+    .git/                  # git init automatically (CLAUDE.md must be at .git level)
+```
+
+`CLAUDE.md` is the heart of it — Claude Code auto-loads it every session, so long-running projects never lose context.
+
+## Example registry
+
+See [examples/PROJECTS.example.json](examples/PROJECTS.example.json) for a sample registry with fictional projects.
+
+## Development
+
+- `skills/project-registry/SKILL.md` — the skill itself (self-contained, no dependencies)
+- Design decisions: [docs/adr/](docs/adr/)
+
+## License
+
+[MIT](LICENSE)

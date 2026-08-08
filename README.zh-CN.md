@@ -1,0 +1,87 @@
+# project-registry
+
+管理**个人项目注册表** + 每个项目**面向 AI 的开发记录**的 Claude Code 技能——从一个菜单完成项目的查看、新建、删除、保存、续接和健康检查。
+
+## 为什么需要它
+
+Claude Code 会跨会话丢失上下文。项目做了几天，下次回来 Claude 不知道发生了什么、下一步做什么，甚至不知道有哪些项目。`project-registry` 解决这个问题：
+
+- **单一注册表**：所有项目登记在一个 `~/projects/PROJECTS.json`，自动序号管理
+- **AI 可读的开发记录**：每个项目有 `CLAUDE.md`（每次会话自动加载），记录状态、决策、待办和**按优先级的下一步行动**
+- **会话恢复**：进入项目自动回顾上次进展，询问从哪继续——不再冷启动
+- **安全默认**：自动备份 + 轮转（每类保留 10 份）、每个项目自动 `git init`、删除前必须确认
+
+## 功能
+
+| 功能 | 说明 |
+|:---|:---|
+| 📋 项目注册表 | `~/projects/PROJECTS.json` 增删改查 + 统计 |
+| 🧭 会话恢复 | 进入项目 → 回顾上次进展 → 确认续接 |
+| 💾 退出自动保存 | 保存/退出**强制**更新 CLAUDE.md 并写出按优先级的下一步行动 |
+| 🔍 MD 健康检查 | 批量检查所有注册项目的 CLAUDE.md + .git |
+| 🛡️ 备份轮转 | PROJECTS.json / CLAUDE.md / SKILL.md 各保留最近 10 份 |
+| 📁 可选文档骨架 | 代码类项目可选 docs/SPEC.md + DESIGN.md |
+| 🌍 通用 | 无硬编码路径，业务项目与代码项目都适用 |
+
+## 安装
+
+### 方式一：npx skills（推荐）
+
+```bash
+npx skills add <owner>/project-registry
+# 或全局安装
+npx skills add <owner>/project-registry -g
+```
+
+### 方式二：Claude Code 插件市场
+
+```
+/plugin marketplace add <owner>/project-registry
+/plugin install project-registry@<owner>
+```
+
+### 方式三：手动
+
+```bash
+git clone https://github.com/<owner>/project-registry
+cp -r project-registry/skills/project-registry ~/.claude/skills/
+```
+
+重启 Claude Code，输入"查看项目"或"list projects"即可使用。
+
+## 快速开始
+
+```text
+1. 触发技能："查看项目" / "list projects"
+2. 菜单列出全部项目：
+   - 输入数字序号（1-99）→ 打开项目（触发会话恢复）
+   - N → 新建项目   D → 删除项目   C → 健康检查
+3. 在项目内工作。结束时："保存项目" 或 "退出"
+4. 保存/退出自动更新 CLAUDE.md：进展 + 按优先级的下一步行动
+```
+
+新建项目结构：
+
+```
+~/projects/
+  PROJECTS.json            # 项目注册清单（唯一权威来源）
+  <project-key>/
+    README.md              # 面向人：背景和范围
+    CLAUDE.md              # 面向 AI：状态、决策、待办、下一步行动
+    .git/                  # 自动 git init（CLAUDE.md 生效前提）
+```
+
+`CLAUDE.md` 是核心——Claude Code 每次会话自动加载它，长项目不会丢失上下文。
+
+## 示例注册表
+
+见 [examples/PROJECTS.example.json](examples/PROJECTS.example.json)（虚构数据示例）。
+
+## 开发
+
+- `skills/project-registry/SKILL.md` — 技能本体（自包含，零依赖）
+- 设计决策： [docs/adr/](docs/adr/)
+
+## 许可证
+
+[MIT](LICENSE)
