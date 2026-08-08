@@ -38,6 +38,8 @@ Your project lives in ~/projects/<key>/
 
 The three memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, Layer 2 keeps *your project's document* fresh, and Layer 1 guarantees *nothing is ever lost*.
 
+**Fresh-keeping ≠ manual save.** Layer 2 auto-fresh is *incremental* — a real-time draft that keeps CLAUDE.md current between saves. **It cannot replace manual save.** Saving or exiting forces a full review: decisions get recorded with their WHY, next actions get re-prioritized. Auto-fresh keeps the record *fresh*; manual save keeps it *right*. The authoritative version is always the one you save manually.
+
 ## Compared to alternatives
 
 | | project-registry | Claude Code auto-memory |
