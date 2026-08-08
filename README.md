@@ -97,6 +97,34 @@ Two layers, fully silent, run only inside `~/projects/` project directories:
 
 `.memory/` contains raw conversation - it is **gitignored** and never committed. Layer 1 keeps data safe even if you kill the terminal: nothing is ever lost.
 
+**Enable Layer 1** (one-time, add hooks to `~/.claude/settings.json`):
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "always",
+        "hooks": [
+          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/transcript-sync.py" },
+          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/auto-summary.py" }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "always",
+        "hooks": [
+          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/session-end.py" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+On first use the skill will ask whether you want to enable auto-save (skippable, asked once).
+
 **Layer 2 - Auto-summary (optional, enabled by configuring an API key)**
 
 Extracts progress / decisions / todos / next actions from the conversation and merges them into CLAUDE.md automatically (throttled: >=10 new messages or >=10 minutes). Works with **any OpenAI-compatible API** - bring your own key:

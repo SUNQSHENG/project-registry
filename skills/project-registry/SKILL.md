@@ -3,7 +3,7 @@ name: project-registry
 description: "Use when the user asks to list, create, delete, modify, search, view project details, save a project, exit a project, roll back a version, or update project development records for projects managed in ~/projects/PROJECTS.json. Triggers: \"查看/列出项目\", \"新建/创建项目\", \"删除项目\", \"修改项目\", \"搜索项目\", \"项目详情\", \"项目统计\", \"项目清单\", \"项目列表\", \"保存项目\", \"退出\", \"返回\", \"更新记录\", \"开发记录\", \"项目上下文\", \"进度记录\", \"回滚\", \"恢复版本\", \"版本回滚\", \"撤销保存\", \"检查项目\", \"体检\", \"为什么\", \"归因\", \"决策背景\", \"audit\". English triggers: \"list/create/delete/save project\", \"project registry\", \"project status\", \"progress record\", \"project context\", \"rollback\", \"restore version\", \"why\", \"attribution\", \"audit\", \"project check\"."
 license: MIT License
 metadata:
-  version: "1.0.2"
+  version: "1.0.3"
 ---
 
 # project-registry
@@ -74,26 +74,36 @@ metadata:
 > ⚠️ **保存/退出时会自动更新 CLAUDE.md**（强制规则）
 ```
 
-## ⚙️ 首次配置引导（API Key 可选）
+## ⚙️ 首次配置引导（自动保存 + API Key 可选）
 
-第一次进入 skill 时：
+第一次进入 skill 时，**逐项检查两项配置**（每项都用 AskUserQuestion 卡片询问，跳过即记录、只问一次）：
 
-1. 检查环境变量 `PR_API_BASE_URL` / `PR_API_KEY` / `PR_API_MODEL` 是否配置（`printenv`）
-2. 未配置 → **AskUserQuestion 卡片**询问：「是否配置 API Key 启用自动摘要保存？」
-   - **配置（推荐）** → 引导设置三个环境变量（README 有各提供商示例：DeepSeek / OpenAI / 通义 / Ollama 本地）
-   - **跳过** → 写入 `<skill 目录>/config.json`（记"已跳过"，后续不再问）
-   - **了解更多** → 展示功能对比表
-3. 配置后立即生效（无需重启会话）
+### 检查 1：层 1 hooks 是否启用
+
+检查 `~/.claude/settings.json` 是否包含本 skill 的 scripts（transcript-sync / auto-summary / session-end）：
+
+- **未启用** → 卡片询问：「是否启用自动保存（层 1 机械快照）？」
+  - **启用（推荐）** → 引导添加 hooks 到 settings.json（README 有完整 JSON 示例；用户同意后可直接写入）
+  - **跳过** → 写入 `<skill 目录>/config.json`（记"已跳过"，后续不再问）
+
+### 检查 2：层 2 API Key 是否配置
+
+检查环境变量 `PR_API_BASE_URL` / `PR_API_KEY` / `PR_API_MODEL`（`printenv`）：
+
+- **未配置** → 卡片询问：「是否配置 API Key 启用自动摘要？」
+  - **配置（推荐）** → 引导设置三个环境变量（README 有各提供商示例：DeepSeek / OpenAI / 通义 / Ollama 本地）
+  - **跳过** → 写入 `<skill 目录>/config.json`
+  - **了解更多** → 展示功能对比表
 
 **功能对比：**
 
-| 能力 | 不配 Key | 配 Key |
-|:---|:---:|:---:|
-| 数据安全（秒级备份 + 会话结束自动提交） | ✅ | ✅ |
-| 全部核心功能（注册表/会话恢复/归因/回滚/检查） | ✅ | ✅ |
-| 自动摘要（对话自动提炼 → CLAUDE.md 实时更新） | ❌ | ✅ |
+| 能力 | 零配置 | 层 1（hooks） | 层 1 + 层 2（hooks + Key） |
+|:---|:---:|:---:|:---:|
+| 全部核心功能（注册表/会话恢复/归因/回滚/检查） | ✅ | ✅ | ✅ |
+| 数据安全（秒级备份 + 会话结束自动提交） | ❌ | ✅ | ✅ |
+| 自动摘要（对话自动提炼 → CLAUDE.md 实时更新） | ❌ | ❌ | ✅ |
 
-> 随时说「配置 API」可重新引导。
+> 随时说「配置自动保存」/「配置 API」可重新引导。
 
 ## 🔍 自动识别当前项目
 

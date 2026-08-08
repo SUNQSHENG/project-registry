@@ -93,6 +93,34 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 `.memory/` 含对话原文——已 gitignore，绝不进仓库。强杀终端也不丢数据。
 
+**启用层 1**（一次性配置，把 hooks 加入 `~/.claude/settings.json`）：
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "always",
+        "hooks": [
+          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/transcript-sync.py" },
+          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/auto-summary.py" }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "always",
+        "hooks": [
+          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/session-end.py" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+首次使用 skill 会询问是否启用自动保存（可跳过，只问一次）。
+
 **层 2 自动摘要（可选，配置 API 后启用）**
 
 自动提取进展/决策/待办/下一步并合并更新 CLAUDE.md（节流：≥10 条新消息或 ≥10 分钟）。**任意 OpenAI 兼容 API**，用自己的 key：
