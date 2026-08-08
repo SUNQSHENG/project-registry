@@ -12,8 +12,8 @@
 ## 当前状态
 
 state: active
-- 阶段：**已发布上线**（github.com/SUNQSHENG/project-registry，Public），三条安装路径验证通过，进入推广期
-- 最新进展：2026-08-08 发布完成——仓库创建 + push（经代理 10808）+ npx skills add 验证（修复 YAML frontmatter 大 bug）+ plugin marketplace/install 验证（修复 marketplace.json schema 大 bug）；第 4 次全流程自审查全过
+- 阶段：**已发布上线**（github.com/SUNQSHENG/project-registry，Public），三条安装路径验证通过，推广策略已定稿
+- 最新进展：2026-08-08 发布完成 + README 安装命令实测修正（/plugin install @project-registry）+ 推广策略定稿（中文社区为主 + 英文目录提交辅助，SKILL.md 不英文化正文、加英文简介块）
 
 ## 架构决策记录
 
@@ -39,6 +39,8 @@ state: active
 - [✅已执行] 2026-08-08 — frontmatter description 改 YAML 双引号格式（74 处转义）（原因：npx skills add 安装自测发现 strict YAML 解析拒绝"Triggers: "冒号+空格——主安装路径完全不可用；预期：双路径安装全通）
 - [✅已执行] 2026-08-08 — marketplace.json 改官方 schema（owner 对象 + plugins 数组 + source 字段）（原因：/plugin marketplace add 报 Invalid schema（owner/plugins 缺失）；预期：插件市场安装全通）
 - [✅已执行] 2026-08-08 — 发布决策：解除暂缓，Public 仓库 + push（经本地代理 10808）+ 三条安装路径验证通过（原因：目标 B（破 50-100 星）确立 + 第 4 次审查通过；预期：星星开始累积）
+- [✅已执行] 2026-08-08 — README 安装命令实测修正：/plugin install 正确写法是 project-registry@project-registry（marketplace 名 = 顶层 name 字段，非 GitHub 用户名）（原因：用户实测报 Marketplace not found；预期：安装命令 100% 可复制）
+- [✅已执行] 2026-08-08 — 推广策略定稿：中文社区为主（掘金/知乎文章，业务型场景差异化蓝海）+ 英文目录提交辅助（skills.so/claudedirectory 自动触达英文用户）+ 暂不做英文亲自发帖（无账号/英文写作，投入产出为负）；SKILL.md 不英文化正文（英文 README 已覆盖门面，中文守住蓝海），改为顶部加英文简介块（原因：星星主要看 README+可发现性，SKILL.md 语言是次级因素；预期：中文转化 + 英文目录自动铺）
 
 ## 项目范围与功能
 
@@ -68,14 +70,16 @@ state: active
 - [x] 改本地 git 身份为 GitHub 账号身份（P10：账号 + noreply 匿名邮箱，2026-08-08）
 - [x] 用户 2 次实测反馈修复（grill-with-docs 落地/手动提醒/卡片化/续接卡片化）+ 3 次全流程自审查（2026-08-08）
 - [x] GitHub 发布（2026-08-08：Public 仓库 + push + 三条安装路径验证通过）
-- [ ] **推广（目标 B：破 50-100 星）**：目录提交（skills.so/claudedirectory.org）+ README 演示截图（虚构数据）+ 中文社区文章（掘金/知乎）
+- [ ] **推广（目标 B：破 50-100 星）**：①中文社区文章（掘金/知乎，优先）②英文目录提交（skills.so/claudedirectory.org）③SKILL.md 顶部加英文简介块 ④README 演示截图（虚构数据）
 - [ ] 持续迭代：收集 issue/反馈，功能增强（如保存脚本化）
 
 ## 下一步行动
 
-1. **推广启动**：目录提交 → README 截图 → 中文文章
-2. 日常使用中持续验证（新建/保存/会话回顾/归因/检查/卡片交互），发现问题记录到本文件
-3. （可选）把保存流程的「备份+轮转」抽成脚本，避免手动备份漏跑轮转（测试会话曾因此积到 20 份）
+1. **中文社区文章**（掘金/知乎）："用 Claude Code 管理我的 25 个业务项目"——业务型项目管理差异化叙事
+2. **英文目录提交**：skills.so / claudedirectory.org 登记
+3. **SKILL.md 顶部加英文简介块**（5 行，消除英文用户顾虑）
+4. README 演示截图（虚构数据渲染，可选）
+5. 日常使用中持续验证，发现问题记录到本文件
 
 ## 已知问题
 
