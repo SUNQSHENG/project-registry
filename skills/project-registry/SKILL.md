@@ -120,7 +120,7 @@ metadata:
 2. 备份 PROJECTS.json → 创建目录 → 写入 README.md + CLAUDE.md
 3. 注册到 PROJECTS.json（seq = nextSeq, 之后 nextSeq +1）
 4. `cd` 到项目目录，`git init`
-5. 必须询问是否引入 grilling/grill-with-docs skill
+5. 必须询问是否引入 grill-with-docs skill
 6. **代码/工程类项目**：询问是否建立可选文档骨架（见「📁 可选文档骨架」）；业务/文档类项目跳过
 
 CLAUDE.md 初始模板见底部。
@@ -191,6 +191,7 @@ CLAUDE.md 初始模板见底部。
 ├── CLAUDE.md              # 开发记录（状态/决策/待办）
 └── docs/
     ├── ARCHITECTURE.md    # 整体架构说明（可选）
+    ├── adr/               # 架构决策记录（可选，与 grill-with-docs/domain-modeling 的 ADR 输出衔接）
     └── dev/
         ├── README.md      # 功能索引
         └── <feature>/
@@ -199,6 +200,7 @@ CLAUDE.md 初始模板见底部。
 ```
 
 > 轻量原则：仅在用户确认时创建，不强制、不默认。
+> **与 grill-with-docs 衔接**：grill-with-docs（拷问+术语+ADR）是设计**流程**，骨架是**落盘结构**——先拷问清楚，再按骨架存储。分工：轻决策记入 CLAUDE.md「架构决策记录」（一行式）；难逆转、有真实权衡的决策落 `docs/adr/`；术语表 CONTEXT.md 由 domain-modeling 专属维护，骨架不重复建。
 
 ## 自动 cd + CLAUDE.md 自动更新
 
