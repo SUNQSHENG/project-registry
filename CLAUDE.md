@@ -13,7 +13,7 @@
 
 state: active
 - 阶段：**grilling 决策落地完成（v1.0.3）**——README 双语重写（多项目管理定位+对比表+架构分工）、npm 安装器发布成功
-- 最新进展：2026-08-08 | grilling 七问定方向（全球个人开发者、错位竞争多项目管理、双轨分发、SessionStart 三问砍掉）；npm 发布全链路打通（注册账号→2FA Windows Hello→granular token→真终端 EOTP 认证）@sunqsheng/project-registry v1.0.3 上线；GitHub Release v1.0.3 已建
+- 最新进展：2026-08-08 | 完成保存项目：补录 grilling 七问决策、整理待办并提交 git
 
 ## 架构决策记录
 
@@ -56,6 +56,8 @@ state: active
 - [✅已执行] 2026-08-08 — 保持命名 project-registry 不更名（原因：npm 包名已发布不可改 + 注册表即差异化标识 + 搜索不亏；预期：品牌资产延续）
 - [✅已执行] 2026-08-08 — npm 发布流程定型：账号 2FA（Windows Hello 安全密钥）+ granular token（Read and write / All packages / 90 天上限）+ 真终端 EOTP 认证（原因：npm 2026-07 公告弃用 bypass2FA token、2026-08 账户变更生效，发布强制 2FA；预期：发布流程可复现）
 - [✅已执行] 2026-08-08 — GitHub About 更新：description 电梯演讲 + topics 11 个（原因：主页门面对齐新定位；预期：搜索发现面扩大）
+
+- [🔄进行中] 2026-08-08 — 保持 skill 名称 project-registry 不变（原因：npm 包名已定死不可改，注册表是差异化标识，改名成本高收益低）
 ## 项目范围与功能
 
 | 包含 | 不包含 |
@@ -112,6 +114,8 @@ state: active
 3. **token 续期提醒**：2026-11-06 到期前重新生成 npm token（90 天上限；生成后需用户在真终端跑一次发布验证）
 4. **响应开源 issue/PR**，按真实反馈迭代（验收标准：2 周一检）
 5. **推广执行**：见 project_registry_promo_20260808（中文文章 + 英文目录）
+
+6. 重启 Claude Code 后实测 hooks，观察 .memory/ 自动更新、自动摘要与 SessionEnd 提交
 ## 已知问题
 
 - （已修复）原 SKILL.md 文档与实况不一致：写死路径、备份路径指向旧目录名——升级时统一修正
