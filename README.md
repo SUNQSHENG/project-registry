@@ -1,6 +1,6 @@
 # project-registry
 
-A Claude Code skill that manages a **personal project registry** with per-project **AI-readable development logs** — list, create, delete, save, resume and health-check all your projects from one menu.
+A Claude Code skill that manages a **personal project registry** with per-project **AI-readable development logs** — list, create, delete, save, resume, audit and roll back all your projects from one menu.
 
 > Chinese docs: [README.zh-CN.md](README.zh-CN.md)
 
@@ -9,9 +9,11 @@ A Claude Code skill that manages a **personal project registry** with per-projec
 Claude Code loses context between sessions. You start a project, work for a while, come back next week — and Claude has no idea what happened, what to do next, or even which projects exist. `project-registry` fixes this with:
 
 - **One registry**: every project registered in a single `~/projects/PROJECTS.json`, with auto sequence management
-- **AI-readable logs**: each project has a `CLAUDE.md` (auto-loaded by Claude every session) recording status, decisions, todos and **prioritized next actions**
+- **AI-readable logs**: each project has a `CLAUDE.md` (auto-loaded by Claude every session) recording status, decisions (with mandatory reasons), todos and **prioritized next actions**
 - **Session resume**: entering a project recalls last progress and asks what to continue from — no more cold starts
-- **Safety by default**: automatic backups with rotation (10 per type), `git init` per project, confirmation before any deletion
+- **Decision attribution**: ask "why X" and get the decision timeline with reasons and impact
+- **Auto-save**: hooks keep data safe (layer 1) and optionally keep CLAUDE.md fresh (layer 2)
+- **Safety by default**: automatic backups with rotation (10 per type), `git init` per project, confirmation before any deletion, rollback with diff confirmation
 
 ## Features
 
@@ -19,8 +21,13 @@ Claude Code loses context between sessions. You start a project, work for a whil
 |:---|:---|
 | 📋 Project registry | CRUD + search + stats over `~/projects/PROJECTS.json` |
 | 🧭 Session resume | Entering a project → recall last progress → confirm what to continue |
+| 📜 Decision discipline | Every decision records WHY (mandatory) — traceable months later |
+| 🔎 Decision attribution | "Why X" → decision timeline + reason chain + status + impact |
 | 💾 Auto-save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
+| 🔁 Auto-save (hooks) | Layer 1: transcript snapshot + backup/commit (silent, zero deps) |
+| 🔁 Auto-summary (API) | Layer 2: conversation auto-extracted into CLAUDE.md (optional) |
 | 🔍 MD health check | Batch-verify `CLAUDE.md` + `.git` exist for every registered project |
+| ↩️ Version rollback | CLAUDE.md / project files / registry — diff confirm + new commit |
 | 🛡️ Backup rotation | PROJECTS.json / CLAUDE.md / SKILL.md backups, keep latest 10 each |
 | 📁 Optional doc skeleton | Code projects: optional `docs/SPEC.md` + `DESIGN.md` per feature |
 | 🌍 Universal | No hardcoded paths, works for business and code projects alike |
@@ -58,8 +65,9 @@ Restart Claude Code. Then type "list projects" — or simply use `/project-regis
 2. Menu shows all projects with numbers:
    - type a number (1-99) → open that project (session resume kicks in)
    - N → new project     D → delete project     C → health check
-3. Work in the project. When done: "save project" or "exit"
-4. Save/exit auto-updates CLAUDE.md with progress + prioritized next actions
+3. Work in the project. Auto-save runs silently in the background — you never need to "remember to save"
+4. When done: "save project" or "exit" (forces a full CLAUDE.md review)
+5. Later: "why X" → decision attribution · "rollback" → restore a version · "check projects" → health check
 ```
 
 New project structure:
@@ -70,6 +78,7 @@ New project structure:
   <project-key>/
     README.md              # for humans: background & scope
     CLAUDE.md              # for AI: status, decisions, todos, next actions
+    .memory/               # auto-save transcripts (gitignored, never committed)
     .git/                  # git init automatically (CLAUDE.md must be at .git level)
 ```
 
@@ -108,6 +117,7 @@ See [examples/PROJECTS.example.json](examples/PROJECTS.example.json) for a sampl
 ## Development
 
 - `skills/project-registry/SKILL.md` — the skill itself (self-contained, no dependencies)
+- `skills/project-registry/scripts/` — auto-save hooks (transcript-sync / auto-summary / session-end)
 - Design decisions: [docs/adr/](docs/adr/)
 
 ## License
