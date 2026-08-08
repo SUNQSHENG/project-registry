@@ -12,8 +12,8 @@
 ## 当前状态
 
 state: active
-- 阶段：**自动保存完成并验证（v1.0.2）**——层1+层3 全链路跑通，提取质量优化两轮
-- 最新进展：2026-08-08 | 已扫描docs目录git跟踪文件，隐私词零命中，无暴露。
+- 阶段：**grilling 决策落地完成（v1.0.3）**——README 双语重写（多项目管理定位+对比表+架构分工）、npm 安装器发布成功
+- 最新进展：2026-08-08 | grilling 七问定方向（全球个人开发者、错位竞争多项目管理、双轨分发、SessionStart 三问砍掉）；npm 发布全链路打通（注册账号→2FA Windows Hello→granular token→真终端 EOTP 认证）@sunqsheng/project-registry v1.0.3 上线；GitHub Release v1.0.3 已建
 
 ## 架构决策记录
 
@@ -50,17 +50,12 @@ state: active
 - [✅已执行] 2026-08-08 — 层3 验证与提取质量优化两轮：①决策定义收紧（执行动作不提取，只提取影响方向/难逆转的真决策）②progress 格式统一（`日期 | 摘要`）③next_actions 改为**追加去重**（不整体替换，防吞手写内容）（原因：实测发现执行动作被误判为决策、下一步行动被覆盖丢失；预期：自动摘要与手动保存互补不互毁）
 - [✅已执行] 2026-08-08 — DeepSeek API 模型名坑：用户配置名 `deepseek-v4-flash[1m]`（Claude Code 网关名）对 API 无效，官方名为 `deepseek-v4-flash`——已修正写入环境变量（原因：实测 API 报 invalid_request_error；预期：环境变量配置文档需注明官方模型名）
 - [✅已执行] 2026-08-08 — 图层编号统一：层3 → **层2**（层1 机械快照 + 层2 自动摘要）+ README 示例去硬编码（DeepSeek URL → 通用占位符）（原因：用户要求编号连贯（层1/层2），且 GitHub 示例不应绑定单一厂商；预期：文档/示例通用化，任何提供商可插拔）
-
-
-- [🔄进行中] 2026-08-08 — 采用官方模型名deepseek-v4-flash（原因：网关名[1m]后缀API调用无效）
-- [🔄进行中] 2026-08-08 — 下一步行动合并策略改为追加去重（原因：原整体替换策略丢失手写内容）
-- [🔄进行中] 2026-08-08 — 提取prompt强化决策定义与格式约束（原因：v1提取误将执行动作记为决策）
-
-- [🔄进行中] 2026-08-08 — 采用官方模型名 deepseek-v4-flash（原因：网关名 deepseek-v4-flash[1m] 不被 API 接受）
-- [🔄进行中] 2026-08-08 — 提取prompt强化决策定义（执行动作不算决策）（原因：v1提取误将执行动作记为决策）
-- [🔄进行中] 2026-08-08 — next_actions 合并策略改为追加去重（原因：原整体替换策略丢失手写内容）
-
-- [🔄进行中] 2026-08-08 — 将层3改名层2并去除硬编码示例（原因：保持层1层2编号连贯，示例不硬编码）
+- [✅已执行] 2026-08-08 — grilling 七问定方向：①目标用户=全球个人开发者（中英并行）②主定位=多项目管理，错位竞争 memory-mcp（原因：记忆赛道红海且官方 auto-memory 已覆盖，项目管理是空位；预期：差异化定位成立）③分发=双轨（npm 主 + marketplace 保留）（原因：竞品全 npm 分发，个人开发者安装习惯）④SessionStart 注入经三轮拷问**砍掉**（原因：cwd 匹配注入 80% 冗余于 CLAUDE.md 原生加载，兜底场景不存在，feature 对比是负分；预期：hooks 维持 Stop+SessionEnd 最简，不新增功能面）⑤验收=真实反馈为主 + npm 下载徽章展示，不追 star（原因：竞争力由"用的人觉得顺手"建立）
+- [✅已执行] 2026-08-08 — README 双语重写：多项目管理主定位 + 电梯演讲 + Problem→Solution 表 + 对比表（vs auto-memory/memory-mcp）+ 架构分工表 + "意图驱动不打扰"哲学 + 层2 定位从卖点降级为"保鲜加分项"（原因：grilling 定位落地；预期：3 秒看懂 + 搜索命中面扩大）
+- [✅已执行] 2026-08-08 — npm 安装器 @sunqsheng/project-registry v1.0.3：零依赖单文件 CLI（复制 skill + hooks 引导授权 + 幂等 + --remove），4 组测试通过（原因：双轨分发 npm 轨落地；预期：npx 一条命令安装）
+- [✅已执行] 2026-08-08 — 保持命名 project-registry 不更名（原因：npm 包名已发布不可改 + 注册表即差异化标识 + 搜索不亏；预期：品牌资产延续）
+- [✅已执行] 2026-08-08 — npm 发布流程定型：账号 2FA（Windows Hello 安全密钥）+ granular token（Read and write / All packages / 90 天上限）+ 真终端 EOTP 认证（原因：npm 2026-07 公告弃用 bypass2FA token、2026-08 账户变更生效，发布强制 2FA；预期：发布流程可复现）
+- [✅已执行] 2026-08-08 — GitHub About 更新：description 电梯演讲 + topics 11 个（原因：主页门面对齐新定位；预期：搜索发现面扩大）
 ## 项目范围与功能
 
 | 包含 | 不包含 |
@@ -99,32 +94,31 @@ state: active
   - [x] 发布版同步 + README 配置说明（v1.0.1 已推送）
   - [x] 全流程审查：隐私扫描（排除 .memory 零命中）+ .memory 未入库 + make_cards.py 路径加固
 - [ ] 持续迭代：收集 issue/反馈
-
-
-- [ ] 重启Claude Code使hooks加载DeepSeek环境变量
-- [ ] 日常验证自动保存并记录提取质量问题
-
-- [ ] 重启 Claude Code 使 hooks 获取 DeepSeek 环境变量
+- [x] README 定位改为"多项目管理"并新增对比表（2026-08-08 完成，双语）
+- [x] 发布 GitHub Releases v1.0.3（2026-08-08 完成）
+- [x] npm 发布 @sunqsheng/project-registry v1.0.3（2026-08-08 完成，2FA+Windows Hello+granular token 全链路）
+- [x] 层2 从卖点降级为加分项（2026-08-08 完成，README 定位为"保鲜"）
+- [x] 重启 Claude Code 后实测 hooks（2026-08-08 完成：层1 transcript 20:00 更新、层2 last_summary 19:59、SessionEnd 提交正常）
+- [ ] 补演示 GIF（grilling 后续待办）
+- [ ] 竞品对比表完善（README 已有简版，可深化）
+- [ ] 反馈渠道：issue 模板（bug/功能请求）
+- [ ] README 挂 npm 下载徽章
+- [ ] 上 skill 目录并在中文社区发帖引流（推广项目承载）
+- [ ] token 到期续期提醒（2026-11-06，npm 90 天上限）
 ## 下一步行动
 
-1. ✅ 环境变量已配置（2026-08-08：BASE_URL/KEY/MODEL=deepseek-v4-flash 写入 Windows 用户级）
-2. **重启 Claude Code 后实测 hooks**：观察 .memory/ 自动更新 + 自动摘要 + SessionEnd 提交
-3. 日常使用中持续验证，发现问题记录到本文件
-4. 响应开源 issue/PR 反馈
-5. 推广相关：见 project_registry_promo_20260808（已拆分）
-
-
-6. 重启Claude Code实测hooks自动保存与SessionEnd提交
-7. 持续验证层3提取质量并迭代prompt
-8. 监控隐私扫描与备份轮转
-
-9. 重启 Claude Code 使 hooks 获取 DeepSeek 环境变量
-10. 验证 SessionEnd hook 在正常退出时自动触发
-11. 日常使用中持续验证层3提取质量并迭代prompt
+1. **打磨发布物料**（grilling 后续待办）：补 demo GIF（保存→强杀→恢复 演示）→ README 挂 npm 下载徽章 → 完善竞品对比表
+2. **反馈渠道**：建 issue 模板（bug/功能请求），开启 GitHub Discussions（如适用）
+3. **token 续期提醒**：2026-11-06 到期前重新生成 npm token（90 天上限；生成后需用户在真终端跑一次发布验证）
+4. **响应开源 issue/PR**，按真实反馈迭代（验收标准：2 周一检）
+5. **推广执行**：见 project_registry_promo_20260808（中文文章 + 英文目录）
 ## 已知问题
 
 - （已修复）原 SKILL.md 文档与实况不一致：写死路径、备份路径指向旧目录名——升级时统一修正
 - 本地 git 身份与 GitHub 账号身份配置在发布前完成（git config，不落仓库）
+- **npm token 90 天过期**（2026-11-06）：npm 对 Read and write granular token 的有效期上限，到期需重新生成
+- **npm 2FA 发布必须在真终端执行**：EOTP 浏览器认证流程需要 TTY，Claude Code 内 `!` 命令无法完成
+- **npm bypass2FA token 已弃用**（2026-07 公告，2026-08 账户变更生效，2027-01 直接发布强制 2FA）——生成 token 勿再勾选 bypass 2FA
 
 ## 参考
 
