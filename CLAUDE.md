@@ -12,8 +12,8 @@
 ## 当前状态
 
 state: active
-- 阶段：**已发布 + 推广计划定稿**（破 100 星 / 2 个月 / 每周 2-3 小时），P0 执行中
-- 最新进展：2026-08-08 发布完成 + README 命令实测修正 + 推广执行计划定稿（渠道 P0-P3 + 复盘机制 + 混合叙事定位）
+- 阶段：**已发布 + 推广执行中**（P0 完成、P1 文章定稿、P2 进行中）
+- 最新进展：2026-08-08 P0 三件完成（topics/英文简介块/README 截图）；P1 文章定稿（《Claude 每次会话都失忆？…》docs/article-zh.md）；P2 claudedirectory PR #135 已提交（skills.so 站点不可达跳过）
 
 ## 架构决策记录
 
@@ -72,10 +72,10 @@ state: active
 - [x] 用户 2 次实测反馈修复（grill-with-docs 落地/手动提醒/卡片化/续接卡片化）+ 3 次全流程自审查（2026-08-08）
 - [x] GitHub 发布（2026-08-08：Public 仓库 + push + 三条安装路径验证通过）
 - [ ] **推广（目标：破 100 星，2 个月）**：
-  - P0：GitHub topics 补全 / SKILL.md 英文简介块 / README 演示截图
-  - P1：中文主文章（掘金+知乎双发，混合叙事："用 Claude Code 管理 25 个业务项目"）
-  - P2：英文目录提交（skills.so / claudedirectory.org / awesome-claude-skills PR）
-  - P3：每周小更新 + 复盘调整
+  - [x] P0：GitHub topics ×8 / SKILL.md 英文简介块 / README 演示截图（2026-08-08）
+  - [x] P1：中文主文章定稿（docs/article-zh.md，标题《Claude 每次会话都失忆？…》）——**待用户发布到掘金/知乎**
+  - [ ] P2：claudedirectory PR #135 ✅（待合并）| skills.so ❌ 站点不可达跳过 | awesome-claude-skills PR（可选，待定）
+  - [ ] P3：每周小更新 + 复盘调整
 - [ ] 复盘：第 4 周 checkpoint（文章数据 → 调整方向）| 第 8 周终检（≥100 成功 / 50-99 部分成功继续 / <50 复盘决定是否进 C 档）
 - [ ] 持续迭代：收集 issue/反馈，功能增强（如保存脚本化）
 
