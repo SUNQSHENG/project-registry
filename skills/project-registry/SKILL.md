@@ -82,17 +82,34 @@ metadata:
 
 检查 `~/.claude/settings.json` 是否包含本 skill 的 scripts（transcript-sync / auto-summary / session-end）：
 
-- **未启用** → 卡片询问：「是否启用自动保存（层 1 机械快照）？」
-  - **启用（推荐）** → 引导添加 hooks 到 settings.json（README 有完整 JSON 示例；用户同意后可直接写入）
-  - **跳过** → 写入 `<skill 目录>/config.json`（记"已跳过"，后续不再问）
+- **未启用** → 卡片询问：「是否启用自动保存（层 1 机械快照）？」——**必须说明授权范围与功能价值**：
+
+  > ⚠️ **授权内容**：在你的 `~/.claude/settings.json` 添加 3 个 hooks（Stop×2 + SessionEnd）。
+  > 仅影响 `~/projects/` 下的项目目录，纯本地静默执行，**不向任何外部服务发送数据**。
+  >
+  > ✅ **带来的功能**：
+  > · 对话秒级备份——每次响应后对话记录同步到项目 `.memory/`（强杀终端不丢）
+  > · 会话结束自动收尾——CLAUDE.md 备份（10 份轮转）+ git 提交
+  > · 数据永不丢，无需任何手动操作
+
+  - **启用（推荐）** → 用户同意后写入 hooks 到 settings.json（README 有完整 JSON 示例）
+  - **跳过** → 写入 `<skill 目录>/config.json`（记"已跳过"，后续不再问）；核心功能不受影响，数据不自动备份
 
 ### 检查 2：层 2 API Key 是否配置
 
 检查环境变量 `PR_API_BASE_URL` / `PR_API_KEY` / `PR_API_MODEL`（`printenv`）：
 
-- **未配置** → 卡片询问：「是否配置 API Key 启用自动摘要？」
-  - **配置（推荐）** → 引导设置三个环境变量（README 有各提供商示例：DeepSeek / OpenAI / 通义 / Ollama 本地）
-  - **跳过** → 写入 `<skill 目录>/config.json`
+- **未配置** → 卡片询问：「是否配置 API Key 启用自动摘要？」——**必须说明授权范围与功能价值**：
+
+  > ⚠️ **授权内容**：使用你自己的 API Key（环境变量 `PR_API_*`）；**对话增量会发送到你配置的 API 端点**（可选手动选择提供商，甚至本地 Ollama 零外发）。
+  >
+  > ✅ **带来的功能**：
+  > · CLAUDE.md 自动保鲜——对话自动提炼进展/决策/待办/下一步写入（约 10 分钟级）
+  > · 无需手动保存，打开项目永远是最近状态
+  > · 任意 OpenAI 兼容 API 可用（DeepSeek / OpenAI / 通义 / 本地 Ollama）
+
+  - **配置（推荐）** → 引导设置三个环境变量（README 有各提供商示例）
+  - **跳过** → 写入 `<skill 目录>/config.json`；CLAUDE.md 内容靠手动保存，数据安全（层 1）不受影响
   - **了解更多** → 展示功能对比表
 
 **功能对比：**
