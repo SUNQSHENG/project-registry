@@ -114,19 +114,21 @@ metadata:
 
 ## 操作详情
 
+> 📌 **交互规则（强制）**：所有需要用户「是/否」或「多选一」的询问，**必须使用 AskUserQuestion 工具以选项卡片呈现**（两个及以上选项按钮），**禁止用纯文本提问**。适用场景：是否引入 grill-with-docs、是否建立文档骨架、项目类型确认、key/背景确认（按建议 or 修改）、删除确认、会话续接选择（从哪项继续）等。
+
 ### 🆕 新建项目
 
 1. 询问项目名称 + 背景说明，生成 key：`<英文缩写>_<YYYYMMDD>`
 2. 备份 PROJECTS.json → 创建目录 → 写入 README.md + CLAUDE.md
 3. 注册到 PROJECTS.json（seq = nextSeq, 之后 nextSeq +1）
 4. `cd` 到项目目录，`git init`
-5. 必须询问是否引入 grill-with-docs skill：
+5. 必须询问是否引入 grill-with-docs skill（**AskUserQuestion 卡片：引入 / 不引入**）：
    - **同意** → 落实三个动作（不是口头"已引入"）：
      ① CLAUDE.md「依赖关系」表记录：`| grill-with-docs | 引入 | 设计拷问流程（首次设计时调用 /grill-with-docs）|`
      ② 初始待办**第一条**（推荐优先）：「与 grill-with-docs 完成一次设计流程」
      ③ 明确告知用户调用方式：「首次设计/规划时输入 /grill-with-docs」
    - **拒绝** → 不记录、不加入待办，正常继续
-6. **代码/工程类项目**：询问是否建立可选文档骨架（见「📁 可选文档骨架」）；业务/文档类项目跳过
+6. **代码/工程类项目**：询问是否建立可选文档骨架（**AskUserQuestion 卡片：建立 / 跳过**；见「📁 可选文档骨架」）；业务/文档类项目跳过
 
 CLAUDE.md 初始模板见底部。
 
