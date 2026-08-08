@@ -56,14 +56,14 @@ state: active
 - [x] 用户试用验收升级版 + 自动验收全面排查（6 项问题全部修复）
 - [x] 创建发布仓库结构：skills/project-registry/SKILL.md + README.md(英) + README.zh-CN.md + LICENSE(MIT) + .claude-plugin/marketplace.json + examples/PROJECTS.example.json(虚构) + .gitignore + docs/adr/ + SKILL.md 补 frontmatter license/metadata（P3）
 - [x] 提交 CLAUDE.md 变更并保存项目（2026-08-08 首次保存）
-- [ ] 改本地 git 身份为 GitHub 账号身份（P10，待用户提供邮箱偏好：noreply 或真实邮箱）
+- [x] 改本地 git 身份为 GitHub 账号身份（P10：SUNQSHENG + noreply 匿名邮箱，2026-08-08）
 - [ ] GitHub 发布（⏸️ 暂缓，用户决定先不发布；随时可恢复——建 Public 仓库 + push 前最终确认）
 - [ ] 安装自测：npx skills add 试装 + /plugin marketplace add 试装（发布时一并做）
 
 ## 下一步行动
 
-1. （待用户决策）git 身份邮箱偏好确认后，改本地 git 身份
-2. （⏸️ 暂缓）GitHub 发布——建 Public 仓库 + push + 安装自测
+1. ✅ git 身份已就绪（SUNQSHENG + noreply）
+2. （⏸️ 暂缓）GitHub 发布——建 Public 仓库 + push + 安装自测；恢复条件：用户说"发布"
 3. 日常使用中持续验证升级版（会话回顾/保存流程），发现问题记录到本文件
 
 ## 已知问题
