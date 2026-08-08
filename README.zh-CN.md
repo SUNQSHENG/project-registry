@@ -73,12 +73,6 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 `CLAUDE.md` 是核心——Claude Code 每次会话自动加载它，长项目不会丢失上下文。
 
-## 演示
-
-![project-registry demo](docs/screenshot.png)
-
-*虚构数据渲染：项目清单、菜单、会话恢复与归因触发。界面中文优先，英文触发词同样可用。*
-
 ## 示例注册表
 
 见 [examples/PROJECTS.example.json](examples/PROJECTS.example.json)（虚构数据示例）。
