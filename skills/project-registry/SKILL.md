@@ -8,6 +8,8 @@ metadata:
 
 # project-registry
 
+> **EN** — A Claude Code skill that manages a personal project registry (`~/projects/PROJECTS.json`) with per-project AI-readable development logs (CLAUDE.md): list, create, delete, save, session-resume, decision attribution, health check and version rollback from one menu. The UI text is Chinese-first, but **triggers work in both Chinese and English and every feature is fully functional regardless of language** (the AI understands both). Install: `npx skills add SUNQSHENG/project-registry` or `/plugin marketplace add SUNQSHENG/project-registry`.
+
 ## 概述
 
 管理 `~/projects/PROJECTS.json` 注册的项目清单，提供项目的增删改查和统计功能。项目以 `<key>/` 子目录形式存放在 `~/projects/` 下，每个项目包含 README.md 记录背景和范围。
