@@ -6,3 +6,6 @@ backups/
 # 系统/编辑器
 .DS_Store
 Thumbs.db
+
+# 自动保存隐私（对话原文，绝不提交）
+.memory/
