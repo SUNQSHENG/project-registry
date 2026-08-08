@@ -12,8 +12,8 @@
 ## 当前状态
 
 state: active
-- 阶段：**v1.0.4 发布完成**——首次配置引导强制提醒（自动 API 保存 ≠ 手动保存）落地，push + GitHub Release + npm 全链路完成
-- 最新进展：2026-08-08 | 保存项目：补录强制提醒决策 + npm 发布坑两条已知问题，更新待办/下一步行动
+- 阶段：**打磨物料进行中**——v1.0.4 发布完成；grilling 打磨决策链定稿；对比表 9 行双语完成；GIF 自动化尝试失败（待续）
+- 最新进展：2026-08-08 | 保存项目：补录打磨 grilling 决策链 9 项 + GIF 自动化失败教训，更新待办/下一步行动
 
 ## 架构决策记录
 
@@ -57,6 +57,8 @@ state: active
 - [✅已执行] 2026-08-08 — npm 发布流程定型：账号 2FA（Windows Hello 安全密钥）+ granular token（Read and write / All packages / 90 天上限）+ 真终端 EOTP 认证（原因：npm 2026-07 公告弃用 bypass2FA token、2026-08 账户变更生效，发布强制 2FA；预期：发布流程可复现）
 - [✅已执行] 2026-08-08 — GitHub About 更新：description 电梯演讲 + topics 11 个（原因：主页门面对齐新定位；预期：搜索发现面扩大）
 - [✅已执行] 2026-08-08 — 首次配置引导强制提醒机制：检查 2 无论是否配置 API 都必须告知用户一次「自动 API 保存不能代替手动保存」，卡片文案删误导句「无需手动保存」，「与手动保存的关系」明确不可互替、权威记录以手动保存为准（原因：用户实测发现卡片文案「无需手动保存」误导——配了 API 的用户可能误以为自动摘要可替代手动保存，导致 CLAUDE.md 权威整理缺失；预期：新用户不会跳过保存/退出时的强制整理）
+- [✅已执行] 2026-08-08 — 打磨物料 grilling 决策链（9 项，grill-with-docs 产出）：①目标=GitHub 访客→星/安装转化率 ②执行顺序=GIF→对比表→徽章延后 ③GIF 工具=ScreenToGif ④GIF 演示环境=虚构数据（延续 ADR-0002 隐私防线）⑤GIF 脚本=5 镜头（清单→打开恢复→保存→强杀→重生）⑥GIF 位置=README Hero 位 ⑦对比表=加维度纵深封顶 10 行 ⑧对比表 9 行（+4：会话恢复/决策归因/健康检查/版本回滚，全切项目管理核心）⑨验收=并入 promo 复盘（4 周 checkpoint+8 周终检），徽章触发阈值=下载破百（原因：全部服务转化率目标；预期：README 门面 3 秒抓住访客）
+- [⏸️搁置] 2026-08-08 — GIF 自动化录制（原因：自动化链三次失败——①switch.sh on 的 mv 遇真实 projects 被占用失败但仍 cp 成子目录→污染真实目录（已清理，数据零污染已验证）②gdigrab 窗口捕获找不到 wt 标题 demo ③自动化驱动 Claude Code 交互会话触碰安全分类器边界被拦截；预期：修复脚本（on 失败即停+窗口检测）或改手动录制（RECORDING.md 已备）后重试）
 
 - [🔄进行中] 2026-08-08 — 保持 skill 名称 project-registry 不变（原因：npm 包名已定死不可改，注册表是差异化标识，改名成本高收益低）
 ## 项目范围与功能
@@ -103,7 +105,8 @@ state: active
 - [x] 层2 从卖点降级为加分项（2026-08-08 完成，README 定位为"保鲜"）
 - [x] 重启 Claude Code 后实测 hooks（2026-08-08 完成：层1 transcript 20:00 更新、层2 last_summary 19:59、SessionEnd 提交正常）
 - [x] 首次配置引导强制提醒「自动 API 保存 ≠ 手动保存」（2026-08-08 完成，v1.0.4：真源+发布快照+npm 包三处同步，push + Release + npm 发布全链路）
-- [ ] 补演示 GIF（grilling 后续待办）
+- [x] 竞品对比表扩到 9 行（2026-08-08 完成，双语，全切项目管理核心）
+- [ ] 补演示 GIF（方案已定：5 镜头/虚构环境/自动化脚本已写 ~/demo-showcase/demo_record.py；录制未成——待修复脚本或手动录制）
 - [ ] 竞品对比表完善（README 已有简版，可深化）
 - [ ] 反馈渠道：issue 模板（bug/功能请求）
 - [ ] README 挂 npm 下载徽章
@@ -111,11 +114,14 @@ state: active
 - [ ] token 到期续期提醒（2026-11-06，npm 90 天上限）
 ## 下一步行动
 
-1. **打磨发布物料**（grilling 后续待办）：补 demo GIF（保存→强杀→恢复 演示）→ README 挂 npm 下载徽章 → 完善竞品对比表
-2. **反馈渠道**：建 issue 模板（bug/功能请求），开启 GitHub Discussions（如适用）
-3. **token 续期提醒**：2026-11-06 到期前重新生成 npm token（90 天上限；生成后需用户在真终端跑一次发布验证，命令见已知问题——必须显式官方 registry）
-4. **响应开源 issue/PR**，按真实反馈迭代（验收标准：2 周一检）
-5. **推广执行**：见 project_registry_promo_20260808（中文文章 + 英文目录）
+1. **完成 demo GIF**：修复 switch.sh（mv 失败即停）→ 重试自动化录制（需用户明确授权）或按 RECORDING.md 手动录 5 镜头（ScreenToGif）→ 导出 `assets/demo.gif`（1280px/15fps/≤2MB）
+2. **README Hero 位放 GIF + 双语**：GIF 就绪后插入标题下一句话介绍处（打磨决策链第 ⑥ 项）
+3. **push GitHub**：对比表 f21332c + GIF + 后续变更一批推（等 GIF 完成后）
+4. **npm 下载徽章**：下载量破百后挂（约 2 周后复查，promo 复盘时触发）
+5. **反馈渠道**：建 issue 模板（bug/功能请求），开启 GitHub Discussions（如适用）
+6. **token 续期提醒**：2026-11-06 到期前重新生成 npm token（90 天上限；生成后需用户在真终端跑一次发布验证，命令见已知问题——必须显式官方 registry）
+7. **响应开源 issue/PR**，按真实反馈迭代（验收标准：2 周一检）
+8. **推广执行**：见 project_registry_promo_20260808（中文文章 + 英文目录）
 ## 已知问题
 
 - （已修复）原 SKILL.md 文档与实况不一致：写死路径、备份路径指向旧目录名——升级时统一修正
@@ -124,6 +130,10 @@ state: active
 - **npm 2FA 发布必须在真终端执行**：EOTP 浏览器认证流程需要 TTY，Claude Code 内 `!` 命令无法完成
 - **本机 npm 全局 registry 是 npmmirror（只读镜像）**：直接 `npm publish` 不会发布到官方且无显著报错（2026-08-08 实测 v1.0.4 首发失败）——必须显式 `npm publish --registry=https://registry.npmjs.org --https-proxy=http://127.0.0.1:10808`
 - **Windows PowerShell 5.1 不支持 `&&` 分隔符**：发布命令需用 `;` 或分行（2026-08-08 实测报 ParserError）
+- **demo-showcase/switch.sh 缺陷**：on 时若真实 `~/projects` 被进程占用，mv 会失败但脚本仍继续 cp → 演示数据复制成子目录污染真实目录（2026-08-08 实测，已清理）。修复方向：mv 失败即停 + 复制前检测 + 校验后置
+- **gdigrab 窗口捕获依赖 wt 标题精确匹配**（`-i title=demo`）：wt 未打开或标题不符时 ffmpeg 直接 abort，录屏 0 字节且无告警衔接（2026-08-08 实测）
+- **自动化驱动 Claude Code 交互会话触发安全分类器拦截**：自动 kill 进程/rm 脚本化操作需用户明确授权，否则会被 Auto-Mode 分类器拒绝（2026-08-08 实测）
+- **~/demo-showcase/ 演示环境已备**（虚构 3 项目 + PROJECTS.json + switch.sh + demo_record.py + RECORDING.md），真实数据零污染已验证（PROJECTS.json 26 条 + 昌吉等抽查无改动）
 - **npm bypass2FA token 已弃用**（2026-07 公告，2026-08 账户变更生效，2027-01 直接发布强制 2FA）——生成 token 勿再勾选 bypass 2FA
 
 ## 参考
