@@ -12,8 +12,8 @@
 ## 当前状态
 
 state: active
-- 阶段：**自动保存功能开发中**（grilling 设计已确认）
-- 最新进展：2026-08-08 自动保存设计定稿（层1 机械快照 hooks + 层3 通用 API 自动摘要 + 首次配置引导）；推广已拆分至 project_registry_promo_20260808（其状态见该项目）
+- 阶段：**自动保存功能完成（v1.0.1 已发布）**
+- 最新进展：2026-08-08 自动保存实现完成——层1 机械快照（transcript-sync/session-end 脚本）+ 层3 通用 API 摘要（auto-summary，任意 OpenAI 兼容）+ 首次配置引导 + hooks 配置生效；隐私事故已处置（.memory 曾误提交→回退+gitignore+脚本修复）；推广拆分后见 project_registry_promo_20260808
 
 ## 架构决策记录
 
@@ -43,6 +43,10 @@ state: active
 - [✅已执行] 2026-08-08 — 推广策略定稿：中文社区为主（掘金/知乎文章，业务型场景差异化蓝海）+ 英文目录提交辅助（skills.so/claudedirectory 自动触达英文用户）+ 暂不做英文亲自发帖（无账号/英文写作，投入产出为负）；SKILL.md 不英文化正文（英文 README 已覆盖门面，中文守住蓝海），改为顶部加英文简介块（原因：星星主要看 README+可发现性，SKILL.md 语言是次级因素；预期：中文转化 + 英文目录自动铺）
 - [✅已执行] 2026-08-08 — 推广执行计划定稿（grill-with-docs）：目标破 100 星（用户从 500 星修正，对齐 B 档）；窗口 2 个月、每周 2-3 小时；渠道 P0-P3（topics/英文简介块/README 截图/中文文章-混合叙事/英文目录/每周小更新）；复盘机制（第 4 周 checkpoint + 第 8 周终检，数据源 GitHub Insights + 文章平台）（原因：B 档目标需执行到位而非堆量；预期：2 个月破 100）——2026-08-08 拆分后推广执行与复盘归 project_registry_promo_20260808
 - [✅已执行] 2026-08-08 — 推广拆分独立项目 project_registry_promo_20260808（原因：推广生命周期（2 个月运营窗口）与开发迭代不同，混装导致 CLAUDE.md 混杂、归档牵连；预期：推广上下文聚焦，到期归档不影响本开发项目）
+- [✅已执行] 2026-08-08 — 自动保存两层设计：层1 机械快照（Stop transcript 同步 + SessionEnd 备份提交，零依赖）+ 层3 通用 API 自动摘要（节流触发，任意 OpenAI 兼容，环境变量配置，未配置跳过）；**取消 CronCreate 定时层**（原因：7 天续期限制 + hooks 方案可完全替代；预期：数据永不丢 + CLAUDE.md 实时保鲜，无续期负担）
+- [✅已执行] 2026-08-08 — 层3 API 通用化：支持任意 OpenAI 兼容提供商 + 用户自己的 key（原因：不绑定单一厂商，降低安装门槛，优于 memory-mcp 的强制 Anthropic key；预期：任意兼容端点可插拔）
+- [✅已执行] 2026-08-08 — 首次使用配置引导（检查 PR_API_KEY → 卡片询问 → 引导设置/跳过记录）（原因：开源用户需要清晰的"配 key 有什么好处"决策；预期：只问一次，跳过不烦人）
+- [⚠️ 事故复盘] 2026-08-08 — **隐私事故**：session-end 脚本曾把 .memory/（对话原文 6MB）提交进 git（本地提交 b65460a，未推送）→ 已处置：git reset 回退 + .gitignore 加 .memory/ + 脚本 git add 白名单化（只 add CLAUDE.md/.gitignore）+ make_cards.py 本地路径加固（原因：教训——**自动脚本的 git 操作必须白名单，禁止批量 add**；预期：此类事故不再发生，发布前隐私扫描排除 .memory 已成惯例）
 
 ## 项目范围与功能
 
@@ -73,19 +77,20 @@ state: active
 - [x] 改本地 git 身份为 GitHub 账号身份（P10：账号 + noreply 匿名邮箱，2026-08-08）
 - [x] 用户 2 次实测反馈修复（grill-with-docs 落地/手动提醒/卡片化/续接卡片化）+ 3 次全流程自审查（2026-08-08）
 - [x] GitHub 发布（2026-08-08：Public 仓库 + push + 三条安装路径验证通过）
-- [ ] **自动保存功能开发（2026-08-08 立项）**：
-  - [ ] settings.json hooks 配置（Stop transcript 同步 / SessionEnd 备份提交 / Stop 摘要-可选）
-  - [ ] 脚本 1：transcript 同步（零依赖，纯本地）
-  - [ ] 脚本 2：通用 API 自动摘要（环境变量 PR_API_BASE_URL/KEY/MODEL，任意 OpenAI 兼容提供商；未配置自动跳过）
-  - [ ] SKILL.md 新增「⚙️ 首次配置引导」+「🔁 自动保存」章节
-  - [ ] 发布版同步 + README 配置说明（各提供商示例 + 功能对比表）
-  - [ ] 全流程审查（隐私/一致性/实测 hooks 触发）
+- [x] **自动保存功能开发（2026-08-08 完成，v1.0.1）**：
+  - [x] settings.json hooks 配置（Stop transcript 同步 / SessionEnd 备份提交 / Stop 摘要-可选）
+  - [x] 脚本 1：transcript 同步（零依赖，纯本地）——干跑测试通过
+  - [x] 脚本 2：通用 API 自动摘要（环境变量 PR_API_BASE_URL/KEY/MODEL，任意 OpenAI 兼容提供商；未配置自动跳过）——跳过逻辑测试通过
+  - [x] 脚本 3：session-end（备份轮转 + git 提交）
+  - [x] SKILL.md 新增「⚙️ 首次配置引导」+「🔁 自动保存」章节
+  - [x] 发布版同步 + README 配置说明（v1.0.1 已推送）
+  - [x] 全流程审查：隐私扫描（排除 .memory 零命中）+ .memory 未入库 + make_cards.py 路径加固
 - [ ] 持续迭代：收集 issue/反馈
 
 ## 下一步行动
 
-1. **自动保存功能实现**：settings.json + 脚本×2 + SKILL.md 章节 + 发布版同步（2026-08-08 立项）
-2. 实现后全流程审查（隐私/一致性/实测）
+1. **配置 DeepSeek 环境变量**（自用启用层 3）：PR_API_BASE_URL / PR_API_KEY / PR_API_MODEL（key 从环境变量读，绝不入库）
+2. **实测验证**：hooks 触发（正常对话中观察 .memory/ 更新与自动提交）
 3. 日常使用中持续验证，发现问题记录到本文件
 4. 响应开源 issue/PR 反馈
 5. 推广相关：见 project_registry_promo_20260808（已拆分）
