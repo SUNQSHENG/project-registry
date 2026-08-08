@@ -123,13 +123,11 @@ state: active
 - [ ] token 到期续期提醒（2026-11-06，npm 90 天上限）
 ## 下一步行动
 
-1. **完成 demo GIF**：修复 switch.sh（mv 失败即停）→ 重试自动化录制（需用户明确授权）或按 RECORDING.md 手动录 5 镜头（ScreenToGif）→ 导出 `assets/demo.gif`（1280px/15fps/≤2MB）
-2. **README Hero 位放 GIF + 双语**：GIF 就绪后插入标题下一句话介绍处（打磨决策链第 ⑥ 项）
-3. **npm 下载徽章**：下载量破百后挂（约 2 周后复查，promo 复盘时触发）
-4. **反馈渠道**：建 issue 模板（bug/功能请求），开启 GitHub Discussions（如适用）
-5. **token 续期提醒**：2026-11-06 到期前重新生成 npm token（90 天上限；生成后需用户在真终端跑一次发布验证，命令见已知问题——必须显式官方 registry）
-6. **响应开源 issue/PR**，按真实反馈迭代（验收标准：2 周一检）
-7. **推广执行**：见 project_registry_promo_20260808（中文文章 + 英文目录）
+1. **npm 下载徽章**：下载量破百后挂（约 2 周后复查，promo 复盘时触发）
+2. **反馈渠道**：建 issue 模板（bug/功能请求），开启 GitHub Discussions（如适用）
+3. **token 续期提醒**：2026-11-06 到期前重新生成 npm token（90 天上限；生成后需用户在真终端跑一次发布验证，命令见已知问题——必须显式官方 registry）
+4. **响应开源 issue/PR**，按真实反馈迭代（验收标准：2 周一检）
+5. **推广执行**：见 project_registry_promo_20260808（中文文章 + 英文目录）
 ## 已知问题
 
 - （已修复）原 SKILL.md 文档与实况不一致：写死路径、备份路径指向旧目录名——升级时统一修正
