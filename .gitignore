@@ -12,3 +12,7 @@ Thumbs.db
 
 # 本地生成脚本（含个人路径，不发布）
 docs/make_cards.py
+
+# npm 安装器
+installer/node_modules/
+installer/*.tgz

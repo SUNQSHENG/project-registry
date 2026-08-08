@@ -1,19 +1,52 @@
 # project-registry
 
-A Claude Code skill that manages a **personal project registry** with per-project **AI-readable development logs** — list, create, delete, save, resume, audit and roll back all your projects from one menu.
+**Multi-project management for personal developers using Claude Code.** One registry for all your projects, session resume with full context, and data you can never lose — silent by design, active on demand.
 
-> Chinese docs: [README.zh-CN.md](README.zh-CN.md)
+> 中文文档：[README.zh-CN.md](README.zh-CN.md)
 
 ## Why this skill
 
-Claude Code loses context between sessions. You start a project, work for a while, come back next week — and Claude has no idea what happened, what to do next, or even which projects exist. `project-registry` fixes this with:
+Personal developers juggle several projects at once — work, side projects, learning. Claude Code loses context between sessions: you come back next week and Claude has no idea what happened, what to do next, or even which projects exist. `project-registry` fixes this:
 
-- **One registry**: every project registered in a single `~/projects/PROJECTS.json`, with auto sequence management
-- **AI-readable logs**: each project has a `CLAUDE.md` (auto-loaded by Claude every session) recording status, decisions (with mandatory reasons), todos and **prioritized next actions**
-- **Session resume**: entering a project recalls last progress and asks what to continue from — no more cold starts
-- **Decision attribution**: ask "why X" and get the decision timeline with reasons and impact
-- **Auto-save**: hooks keep data safe (layer 1) and optionally keep CLAUDE.md fresh (layer 2)
-- **Safety by default**: automatic backups with rotation (10 per type), `git init` per project, confirmation before any deletion, rollback with diff confirmation
+| Problem | Solution |
+|:---|:---|
+| "Which projects do I even have?" | **One registry** — every project in a single `~/projects/PROJECTS.json`, with CRUD, search and stats |
+| "What did I do last time?" | **AI-readable logs** — each project has a `CLAUDE.md` (auto-loaded every session) with status, decisions, todos and **prioritized next actions** |
+| "Why did I choose X?" | **Decision attribution** — "why X" returns the decision timeline with reasons and impact |
+| "I forgot to save" | **Auto-save hooks** — transcript snapshots every response, backup + commit on exit (Layer 1, zero dependencies) |
+| "CLAUDE.md went stale" | **Fresh-keeping (optional)** — an LLM of your choice extracts progress into CLAUDE.md (Layer 2) |
+| "I broke something" | **Rollback** — diff-confirmed version restore for CLAUDE.md, files and the registry |
+
+**Design philosophy: intent-driven, never pushy.** The project system is *your* workflow, not the default state of a session. Claude never advertises your projects unprompted — it answers when you ask, and recognizes you when you *are* in a project directory.
+
+## How it works
+
+```
+Your project lives in ~/projects/<key>/
+  PROJECTS.json      ← identity index (name, status, description, updated-at)
+  <key>/CLAUDE.md    ← deep content (status, decisions, todos, next actions)
+  <key>/.memory/     ← transcript snapshots (gitignored, never committed)
+```
+
+| Layer | Mechanism | Responsibility |
+|:---|:---|:---|
+| **Native loading** | Claude Code auto-loads `CLAUDE.md` when a session starts in the project dir | Depth — what happened, what's next |
+| **Registry** | `PROJECTS.json`, accessed when *you* ask (list / open / search / stats) | Identity — which projects exist, their state |
+| **Layer 1 (default)** | `Stop` hook → transcript snapshot · `SessionEnd` hook → backup rotation + git commit | Safety — data survives even a killed terminal |
+| **Layer 2 (optional)** | Your own OpenAI-compatible API extracts the conversation into CLAUDE.md (throttled) | Freshness — CLAUDE.md never goes stale |
+| **Manual save** | "save project" / "exit" forces a full CLAUDE.md review | Quality — a considered, attributed record |
+
+The three memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, Layer 2 keeps *your project's document* fresh, and Layer 1 guarantees *nothing is ever lost*.
+
+## Compared to alternatives
+
+| | project-registry | Claude Code auto-memory | memory-mcp |
+|:---|:---:|:---:|:---:|
+| Project registry (CRUD/stats/rollback) | ✅ | ❌ | ❌ (path lookup only) |
+| Project `CLAUDE.md` auto-fresh | ✅ (optional, any API) | ❌ (writes global memory dir) | ❌ (writes global memory) |
+| Transcript safety / recovery | ✅ seconds-level + rotation + git | partial | ✅ git snapshots |
+| Works in Chinese | ✅ | ✅ | ❌ |
+| Privacy | Local-first; Layer 2 sends only to the endpoint you configure | local | local |
 
 ## Features
 
@@ -23,9 +56,9 @@ Claude Code loses context between sessions. You start a project, work for a whil
 | 🧭 Session resume | Entering a project → recall last progress → confirm what to continue |
 | 📜 Decision discipline | Every decision records WHY (mandatory) — traceable months later |
 | 🔎 Decision attribution | "Why X" → decision timeline + reason chain + status + impact |
-| 💾 Auto-save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
+| 💾 Save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
 | 🔁 Auto-save (hooks) | Layer 1: transcript snapshot + backup/commit (silent, zero deps) |
-| 🔁 Auto-summary (API) | Layer 2: conversation auto-extracted into CLAUDE.md (optional) |
+| 🔁 Fresh-keeping (API) | Layer 2: conversation auto-extracted into CLAUDE.md (optional) |
 | 🔍 MD health check | Batch-verify `CLAUDE.md` + `.git` exist for every registered project |
 | ↩️ Version rollback | CLAUDE.md / project files / registry — diff confirm + new commit |
 | 🛡️ Backup rotation | PROJECTS.json / CLAUDE.md / SKILL.md backups, keep latest 10 each |
@@ -123,11 +156,11 @@ Two layers, fully silent, run only inside `~/projects/` project directories:
 }
 ```
 
-On first use the skill will ask whether you want to enable auto-save (skippable, asked once).
+On first use the skill will ask whether you want to enable auto-save — it explains exactly what gets authorized (hooks in your `settings.json`, local-only, nothing leaves your machine) and what you get (nothing is ever lost). Skippable, asked once.
 
-**Layer 2 - Auto-summary (optional, enabled by configuring an API key)**
+**Layer 2 - Fresh-keeping (optional, bring your own key)**
 
-Extracts progress / decisions / todos / next actions from the conversation and merges them into CLAUDE.md automatically (throttled: >=10 new messages or >=10 minutes). Works with **any OpenAI-compatible API** - bring your own key:
+Keeps CLAUDE.md fresh by extracting progress / decisions / todos / next actions from the conversation and merging them (throttled: >=10 new messages or >=10 minutes). Works with **any OpenAI-compatible API**:
 
 ```bash
 # any OpenAI-compatible API works (DeepSeek / OpenAI / Qwen / local Ollama - same shape)
@@ -136,7 +169,7 @@ export PR_API_KEY=sk-your-key                                 # <-- your own key
 export PR_API_MODEL=your-model                                # <-- e.g. deepseek-v4-flash / gpt-4o-mini / qwen-plus
 ```
 
-Without a key, the skill still gives you Layer 1 (data safety) plus all core features; with a key you additionally get auto-fresh CLAUDE.md. On first use the skill asks whether you want to configure a key (skippable, asked once). Conversation is only sent to the endpoint you configure.
+Without a key you still get Layer 1 plus all core features; with a key you additionally get an always-fresh CLAUDE.md. Conversation is only sent to the endpoint you configure. On first use the skill asks whether you want to configure a key (skippable, asked once).
 
 ## Example registry
 
