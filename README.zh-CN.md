@@ -37,7 +37,7 @@ npx skills add SUNQSHENG/project-registry -g
 
 ```
 /plugin marketplace add SUNQSHENG/project-registry
-/plugin install project-registry@SUNQSHENG
+/plugin install project-registry@project-registry
 ```
 
 ### 方式三：手动
