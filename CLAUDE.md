@@ -74,7 +74,7 @@ state: active
 - [ ] **推广（目标：破 100 星，2 个月）**：
   - [x] P0：GitHub topics ×8 / SKILL.md 英文简介块 / README 演示截图（2026-08-08）
   - [x] P1：中文主文章定稿（docs/article-zh.md，标题《Claude 每次会话都失忆？…》）——**待用户发布到掘金/知乎**
-  - [ ] P2：claudedirectory PR #135 ✅（待合并）| skills.so ❌ 站点不可达跳过 | awesome-claude-skills PR（可选，待定）
+  - [x] P2：claudedirectory PR #135 ✅（待合并）| skills.so ❌ 站点不可达跳过 | awesome-claude-skills PR #546 ✅（BehiSecc，待合并）（2026-08-08）
   - [ ] P3：每周小更新 + 复盘调整
 - [ ] 复盘：第 4 周 checkpoint（文章数据 → 调整方向）| 第 8 周终检（≥100 成功 / 50-99 部分成功继续 / <50 复盘决定是否进 C 档）
 - [ ] 持续迭代：收集 issue/反馈，功能增强（如保存脚本化）
