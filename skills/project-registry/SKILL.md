@@ -124,9 +124,10 @@ metadata:
 4. `cd` 到项目目录，`git init`
 5. 必须询问是否引入 grill-with-docs skill（**AskUserQuestion 卡片：引入 / 不引入**）：
    - **同意** → 落实三个动作（不是口头"已引入"）：
-     ① CLAUDE.md「依赖关系」表记录：`| grill-with-docs | 引入 | 设计拷问流程（首次设计时调用 /grill-with-docs）|`
-     ② 初始待办**第一条**（推荐优先）：「与 grill-with-docs 完成一次设计流程」
-     ③ 明确告知用户调用方式：「首次设计/规划时输入 /grill-with-docs」
+     ① CLAUDE.md「依赖关系」表记录：`| grill-with-docs | 引入 | 设计拷问流程（需用户手动调用 /grill-with-docs）|`
+     ② 初始待办顶部加**一条提醒**（标注「手动」，非可执行任务）：
+        `- [ ] 📌 提醒（手动）：设计/规划时输入 /grill-with-docs 启动拷问（该 skill 仅限用户手动调用，AI 无法代激活）`
+     ③ 明确告知用户调用方式：「首次设计/规划时**手动输入** /grill-with-docs」
    - **拒绝** → 不记录、不加入待办，正常继续
 6. **代码/工程类项目**：询问是否建立可选文档骨架（**AskUserQuestion 卡片：建立 / 跳过**；见「📁 可选文档骨架」）；业务/文档类项目跳过
 
