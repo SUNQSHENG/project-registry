@@ -120,7 +120,12 @@ metadata:
 2. 备份 PROJECTS.json → 创建目录 → 写入 README.md + CLAUDE.md
 3. 注册到 PROJECTS.json（seq = nextSeq, 之后 nextSeq +1）
 4. `cd` 到项目目录，`git init`
-5. 必须询问是否引入 grill-with-docs skill
+5. 必须询问是否引入 grill-with-docs skill：
+   - **同意** → 落实三个动作（不是口头"已引入"）：
+     ① CLAUDE.md「依赖关系」表记录：`| grill-with-docs | 引入 | 设计拷问流程（首次设计时调用 /grill-with-docs）|`
+     ② 初始待办**第一条**（推荐优先）：「与 grill-with-docs 完成一次设计流程」
+     ③ 明确告知用户调用方式：「首次设计/规划时输入 /grill-with-docs」
+   - **拒绝** → 不记录、不加入待办，正常继续
 6. **代码/工程类项目**：询问是否建立可选文档骨架（见「📁 可选文档骨架」）；业务/文档类项目跳过
 
 CLAUDE.md 初始模板见底部。
