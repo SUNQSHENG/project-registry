@@ -2,7 +2,7 @@
 
 A Claude Code skill that manages a **personal project registry** with per-project **AI-readable development logs** — list, create, delete, save, resume and health-check all your projects from one menu.
 
-> 中文说明见 [README.zh-CN.md](README.zh-CN.md)
+> Chinese docs: [README.zh-CN.md](README.zh-CN.md)
 
 ## Why this skill
 
@@ -49,16 +49,16 @@ git clone https://github.com/SUNQSHENG/project-registry
 cp -r project-registry/skills/project-registry ~/.claude/skills/
 ```
 
-Restart Claude Code. Then type "查看项目" or "list projects" — or simply use `/project-registry`.
+Restart Claude Code. Then type "list projects" — or simply use `/project-registry`.
 
 ## Quick start
 
 ```text
-1. Trigger the skill: "查看项目" / "list projects" / /project-registry
+1. Trigger the skill: "list projects" / /project-registry
 2. Menu shows all projects with numbers:
    - type a number (1-99) → open that project (session resume kicks in)
    - N → new project     D → delete project     C → health check
-3. Work in the project. When done: "保存项目" or "退出"
+3. Work in the project. When done: "save project" or "exit"
 4. Save/exit auto-updates CLAUDE.md with progress + prioritized next actions
 ```
 
