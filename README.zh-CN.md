@@ -65,7 +65,17 @@
 
 ## 安装
 
-### 方式一：npx skills（推荐）
+### 方式一：npm（一键安装，推荐）
+
+```bash
+npx @sunqsheng/project-registry
+# 或全局安装，随时可运行
+npm i -g @sunqsheng/project-registry && project-registry
+```
+
+复制 skill 并带授权提示配置自动保存 hooks。幂等；`project-registry --remove` 可移除。
+
+### 方式二：npx skills
 
 ```bash
 npx skills add SUNQSHENG/project-registry
@@ -73,14 +83,14 @@ npx skills add SUNQSHENG/project-registry
 npx skills add SUNQSHENG/project-registry -g
 ```
 
-### 方式二：Claude Code 插件市场
+### 方式三：Claude Code 插件市场
 
 ```
 /plugin marketplace add SUNQSHENG/project-registry
 /plugin install project-registry@project-registry
 ```
 
-### 方式三：手动
+### 方式四：手动
 
 ```bash
 git clone https://github.com/SUNQSHENG/project-registry

@@ -67,7 +67,17 @@ The three memory functions are deliberately non-overlapping: Claude Code's built
 
 ## Install
 
-### Option 1: npx skills (recommended)
+### Option 1: npm (one-command, recommended)
+
+```bash
+npx @sunqsheng/project-registry
+# or install globally and run whenever you want
+npm i -g @sunqsheng/project-registry && project-registry
+```
+
+Copies the skill and configures auto-save hooks with an authorization prompt. Idempotent; remove with `project-registry --remove`.
+
+### Option 2: npx skills
 
 ```bash
 npx skills add SUNQSHENG/project-registry
@@ -75,14 +85,14 @@ npx skills add SUNQSHENG/project-registry
 npx skills add SUNQSHENG/project-registry -g
 ```
 
-### Option 2: Claude Code plugin marketplace
+### Option 3: Claude Code plugin marketplace
 
 ```
 /plugin marketplace add SUNQSHENG/project-registry
 /plugin install project-registry@project-registry
 ```
 
-### Option 3: Manual
+### Option 4: Manual
 
 ```bash
 git clone https://github.com/SUNQSHENG/project-registry
