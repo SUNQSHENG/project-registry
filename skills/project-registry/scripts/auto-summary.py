@@ -143,13 +143,13 @@ def merge_claude_md(project_dir: Path, summary: dict):
     md = md_path.read_text(encoding="utf-8")
     today = time.strftime("%Y-%m-%d")
 
-    # ① 最新进展：更新「当前状态」段的"最新进展"行（取最新一条覆盖）
+    # ① 最新进展：更新「当前状态」段的"最新进展"行（统一格式：日期 | 自动摘要）
     progress = str(summary.get("progress", "")).strip()
     if progress:
         if "最新进展：" in md:
-            md = re.sub(r"- 最新进展：.*", f"- 最新进展：{today} 自动保存 | {progress[:120]}", md, count=1)
+            md = re.sub(r"- 最新进展：.*", f"- 最新进展：{today} | {progress[:100]}", md, count=1)
         else:
-            md += f"\n- 最新进展：{today} 自动保存 | {progress[:120]}\n"
+            md += f"\n- 最新进展：{today} | {progress[:100]}\n"
 
     # ② 新决策：追加到「架构决策记录」（含原因/状态，去重）
     decisions = summary.get("decisions", [])
@@ -174,15 +174,24 @@ def merge_claude_md(project_dir: Path, summary: dict):
             if isinstance(t, str) and t.strip() and f"- [ ] {t.strip()}" not in md:
                 md = md.rstrip() + f"\n- [ ] {t.strip()}\n"
 
-    # ④ 下一步行动：更新「下一步行动」段（新增项合并）
+    # ④ 下一步行动：只追加新项（去重），不替换已有内容
     next_actions = summary.get("next_actions", [])
     if isinstance(next_actions, list) and next_actions:
         actions = [str(a).strip() for a in next_actions if str(a).strip()]
-        if actions:
-            block = "## 下一步行动\n\n" + "\n".join(f"{i+1}. {a}" for i, a in enumerate(actions[:5]))
+        existing = set(re.findall(r"^\d+\. (.+)$", md, re.M))
+        # 去重：与已有条目（含去掉序号后的内容）都不重复才追加
+        new_items = []
+        for a in actions:
+            if a in existing:
+                continue
+            if any(a in e or e in a for e in existing):
+                continue
+            new_items.append(a)
+        if new_items:
             if "## 下一步行动" in md:
-                md = re.sub(r"## 下一步行动\n.*?(?=\n## |\Z)", block + "\n", md, count=1, flags=re.S)
+                md = md.rstrip() + "\n" + "\n".join(f"{len(existing)+i+1}. {a}" for i, a in enumerate(new_items[:3])) + "\n"
             else:
+                block = "## 下一步行动\n\n" + "\n".join(f"{i+1}. {a}" for i, a in enumerate(new_items[:3]))
                 md = md.rstrip() + "\n\n" + block + "\n"
 
     md_path.write_text(md, encoding="utf-8")
@@ -219,7 +228,13 @@ def main() -> int:
         "你是项目上下文提炼器。从对话中提取结构化信息，只输出 JSON：\n"
         '{"progress": "最新进展一句话", "decisions": [{"decision": "决策内容", "reason": "原因"}], '
         '"todos": ["新待办"], "next_actions": ["下一步行动(按优先级)"]}\n'
-        "要求：决策必须能提取出原因；没有就留空数组；progress 不超过 50 字。\n\n对话：\n" + conv[-12000:]
+        "严格规则：\n"
+        "1. decisions 只提取【真正的决策】——影响项目方向、难逆转、有取舍的选择；"
+        "执行动作（\"做了X\"\"修改了Y\"）不算决策，不提取\n"
+        "2. decision 必须一句话（不超过 30 字），reason 必须存在（对话中找不到原因就跳过该决策）\n"
+        "3. progress 是最新进展的一句话（不超过 50 字），用过去时\n"
+        "4. todos 是对话中新提出的待办；next_actions 按优先级排列\n"
+        "5. 没有对应内容就留空数组\n\n对话：\n" + conv[-12000:]
     )
     raw = call_api([
         {"role": "system", "content": "你是项目上下文提炼器，输出 JSON。"},
