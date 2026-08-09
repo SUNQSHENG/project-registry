@@ -82,7 +82,7 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
 - **未启用** → 卡片询问：「是否启用自动备份（层 1 机械快照）？」——**必须说明授权范围与功能价值**：
 
   > ⚠️ **授权内容**：在你的 `~/.claude/settings.json` 添加 3 个 hooks（Stop×2 + SessionEnd）。
-  > 仅影响 `~/projects/` 下的项目目录，纯本地静默执行，**不向任何外部服务发送数据**。
+  > 仅影响**项目根**（默认 `~/projects/`，含自定义）下的项目目录，纯本地静默执行，**不向任何外部服务发送数据**。
   >
   > ✅ **带来的功能**：
   > · 对话秒级备份——每次响应后对话记录同步到项目 `.memory/`（强杀终端不丢）
@@ -142,7 +142,7 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
 > 每次进入 skill 时已自动 `cd ~`。需要定位项目的操作（检测/修改/保存/更新记录等）自动识别当前目录：
 
 ```
-1. pwd 检查是否匹配 ~/projects/<key>/
+1. pwd 检查是否匹配 <项目根>/<key>/（项目根默认 `~/projects/`）
 2. 匹配 → 自动选定该项目
 3. 不匹配 → 手动选择（按序号或 key）
 ```
@@ -171,7 +171,7 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
 
 ### 📂 打开项目
 
-1. 按序号或 key 定位项目 → 校验 `~/projects/<key>/` 目录存在
+1. 按序号或 key 定位项目 → 校验 `<项目根>/<key>/` 目录存在（项目根默认 `~/projects/`）
 2. `cd` 到项目目录
 3. **触发「🧭 会话开始流程」**（回顾上次进展）
 4. **声明当前项目**：「📌 当前项目：`<key>`，保鲜/收尾写入此项目」——会话级显式绑定，操作聚焦本项目
@@ -188,7 +188,7 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
 
 ## 操作详情
 
-> 📌 **交互规则（强制）**：所有需要用户「是/否」或「多选一」的询问，**必须使用 AskUserQuestion 工具以选项卡片呈现**（两个及以上选项按钮），**禁止用纯文本提问**。适用场景：是否引入 grill-with-docs、是否建立文档骨架、项目类型确认、key/背景确认（按建议 or 修改）、删除确认、会话续接选择（从哪项继续）等。
+> 📌 **交互规则（强制）**：所有需要用户「是/否」或「多选一」的询问，**必须使用 AskUserQuestion 工具以选项卡片呈现**（两个及以上选项按钮），**禁止用纯文本提问**。适用场景：是否引入 grill-with-docs、是否建立文档骨架、项目类型确认、key/背景确认（按建议 or 修改）、删除确认、**项目切换保存提醒**、路径自定义与迁移确认等。
 
 ### 🆕 新建项目
 
@@ -311,7 +311,7 @@ CLAUDE.md 初始模板见底部。
 
 打开项目后**持续保持 cwd 在项目根目录**；临时读外部文件优先用**绝对路径**；确需 cd 离开时，读完**立即切回项目根**。任何跨目录操作结束时，`pwd` 确认在项目根。
 
-> **原理**：层 1 / 层 2 三个 hooks 脚本（transcript-sync.py / auto-summary.py / session-end.py）全部基于 `os.getcwd()` 定位当前项目（`is_project_dir()` 逻辑）——cwd 在 `~/projects/<key>/` 下才操作该项目，否则**跳过**。cwd 漂移会导致：保鲜/transcript 同步写到错误项目，或全部跳过；会话结束收尾（备份+git 提交）漏掉当前项目。
+> **原理**：层 1 / 层 2 三个 hooks 脚本（transcript-sync.py / auto-summary.py / session-end.py）全部基于 `os.getcwd()` 定位当前项目（`is_project_dir()` 逻辑）——cwd 在 `<项目根>/<key>/`（默认 `~/projects/`）下才操作该项目，否则**跳过**。cwd 漂移会导致：保鲜/transcript 同步写到错误项目，或全部跳过；会话结束收尾（备份+git 提交）漏掉当前项目。
 
 ## 安全机制
 
@@ -346,7 +346,7 @@ CLAUDE.md 初始模板见底部。
 
 ## 🔁 自动备份（hooks，静默执行）
 
-两层机制，全部后台静默、失败静默重试、只在 `~/projects/` 项目目录生效。
+两层机制，全部后台静默、失败静默重试、只在**项目根**（默认 `~/projects/`）项目目录生效。
 
 ### 层 1 机械快照（零依赖，默认开启）
 
