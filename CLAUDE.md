@@ -65,6 +65,7 @@ state: active
 - [✅已执行] 2026-08-08 — README 表格措辞修正：「强制全面回顾 CLAUDE.md」→「强制全面更新 CLAUDE.md」（原因：保存动作实际是 agent 全面更新 CLAUDE.md（补录决策/重排下一步），「回顾」偏被动观察，语义不准确；范围=README 中英表格各一处，双语同步，未 bump 版本号（随下次发布一并带出），已提交推送 4248ba0）
 - [✅已执行] 2026-08-09 — **cwd 纪律写入 SKILL.md 强制章节**：打开项目后持续保持 cwd 在项目根目录；临时读外部文件用绝对路径；确需 cd 离开时读完立即切回；跨目录操作结束 pwd 确认（原因：层1/层2 三个 hooks 脚本（transcript-sync/auto-summary/session-end）全部基于 os.getcwd() 定位项目——实测发现读脚本时 cwd 漂移到 skill 的 scripts 目录，保鲜与会话收尾会写错项目或全部跳过；同步=真源 248a89a + 发布快照 980f93a push，未 bump 版本，npm 下版带出；预期：任何使用该 skill 的会话 cwd 不再漂移）
 - [✅已执行] 2026-08-09 — 首次配置引导确认：层1 hooks 实际已配置（settings.json 已有 Stop×2 + SessionEnd 且备份轮转运行正常），写入 skill config.json 记录两项均已配置（原因：首次进入引导的检测方法曾误判 hooks 未启用——grep 字段名与真实 JSON 结构（type: command）不匹配；预期：config.json 落盘后不再重复询问）
+- [✅已执行] 2026-08-09 — **GitHub Releases 语言约定：一律英语**（原因：开源仓库面向全球用户，v1.0.4-1.0.6 曾用中文与 v1.0.3 英文风格不一致；已重写三个历史 Release 为英文。预期：后续每次发布 Release 标题/正文均用英语，中文内容留在 README.zh-CN.md）
 
 - [🔄进行中] 2026-08-08 — 保持 skill 名称 project-registry 不变（原因：npm 包名已定死不可改，注册表是差异化标识，改名成本高收益低）
 ## 项目范围与功能
