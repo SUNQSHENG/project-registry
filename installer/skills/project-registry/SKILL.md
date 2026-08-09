@@ -23,7 +23,7 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
     CLAUDE.md      # 项目开发记录（面向 AI，每次对话自动加载）
 ```
 
-所有项目**必须**存放在**项目根**目录下。项目根**默认 `~/projects/`**，可在首次引导「检查 3」或说「设置项目路径」自定义（写入 skill config.json 的 `projectsRoot`，三个 hooks 脚本自动读取）。本文档所有 `~/projects/` 均指项目根。
+所有项目**必须**存放在**项目根**目录下。项目根**默认 `~/projects/`**，可在首次引导「检查 2」或说「设置项目路径」自定义（写入 skill config.json 的 `projectsRoot`，两个 hooks 脚本自动读取）。本文档所有 `~/projects/` 均指项目根。
 
 > **区别：** README.md 给开发者/协作者看项目概况；CLAUDE.md 给 AI 看，记录开发过程中的决策、状态、上下文，确保长项目不丢失信息。
 
@@ -77,11 +77,11 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
 
 ### 检查 1：层 1 hooks 是否启用
 
-检查 `~/.claude/settings.json` 是否包含本 skill 的 scripts（transcript-sync / auto-summary / session-end）：
+检查 `~/.claude/settings.json` 是否包含本 skill 的 scripts（transcript-sync / session-end）：
 
 - **未启用** → 卡片询问：「是否启用自动备份（层 1 机械快照）？」——**必须说明授权范围与功能价值**：
 
-  > ⚠️ **授权内容**：在你的 `~/.claude/settings.json` 添加 3 个 hooks（Stop×2 + SessionEnd）。
+  > ⚠️ **授权内容**：在你的 `~/.claude/settings.json` 添加 2 个 hooks（Stop + SessionEnd）。
   > 仅影响**项目根**（默认 `~/projects/`，含自定义）下的项目目录，纯本地静默执行，**不向任何外部服务发送数据**。
   >
   > ✅ **带来的功能**：
@@ -92,7 +92,7 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
   - **启用（推荐）** → 用户同意后写入 hooks 到 settings.json（README 有完整 JSON 示例）
   - **跳过** → 写入 `<skill 目录>/config.json`（记"已跳过"，后续不再问）；核心功能不受影响，数据不自动备份
 
-### 检查 3：项目根路径是否自定义
+### 检查 2：项目根路径是否自定义
 
 检查 `config.json` 是否含 `projectsRoot`：
 
@@ -188,14 +188,14 @@ CLAUDE.md 初始模板见底部。
 
 ### 📂 设置项目路径
 
-用户说「设置项目路径 / 更改项目目录」时触发（检查 3 未配置时也走此流程）：
+用户说「设置项目路径 / 更改项目目录」时触发（检查 2 未配置时也走此流程）：
 
 1. 卡片询问：默认 `~/projects/`（推荐）还是自定义路径
 2. 自定义 → 用户输入新路径 → 写入 `config.json` 的 `projectsRoot`（不移动任何数据，只改配置）
 3. 检测旧根（默认 `~/projects/`）是否有存量项目：
    - **有** → 列出全部待移动目录 + PROJECTS.json → **卡片确认**（标注移动不可逆风险）→ 备份注册表 → 逐目录移动（同盘 move / 跨盘复制+删除）→ **校验**新根项目数 == 注册表项目数 → 汇报迁移结果
    - **无** → 直接生效
-4. 三个 hooks 脚本（transcript-sync / auto-summary / session-end）自动读新根，**无需重启**
+4. 两个 hooks 脚本（transcript-sync / session-end）自动读新根，**无需重启**
 
 > 迁移只移动项目目录与注册表；`<skill 目录>/backups/` 备份与 hooks 配置不动。
 
