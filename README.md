@@ -179,7 +179,7 @@ On first use the skill will ask whether you want to enable auto-backup — it ex
 
 **Unrecorded-work recovery (save-time fallback)**
 
-Saving a project records the save moment (saved_at); when you open a project and the latest archive is newer than the save moment, the session resume reads the tail of the conversation — **unrecorded work is never silently lost** (it asks before reading large volumes). Zero configuration; auto-backup keeps data safe and all core features work out of the box.
+Saving a project records the save moment (saved_at); when you open a project and the latest archived conversation (the `.memory/transcripts/` files written by auto-backup) is newer than the save moment, the session resume reads the tail of the conversation — **unrecorded work is never silently lost** (it asks before reading large volumes). Zero configuration; auto-backup keeps data safe and all core features work out of the box.
 
 **Portability - can I use this outside Claude Code?**
 
