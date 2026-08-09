@@ -1,9 +1,6 @@
 ---
 name: project-registry
 description: "Use when the user asks to list, create, delete, modify, search, view project details, save a project, exit a project, roll back a version, or update project development records for projects managed in ~/projects/PROJECTS.json. Triggers: \"查看/列出项目\", \"新建/创建项目\", \"删除项目\", \"修改项目\", \"搜索项目\", \"项目详情\", \"项目统计\", \"项目清单\", \"项目列表\", \"保存项目\", \"退出\", \"返回\", \"更新记录\", \"开发记录\", \"项目上下文\", \"进度记录\", \"回滚\", \"恢复版本\", \"版本回滚\", \"撤销保存\", \"检查项目\", \"体检\", \"为什么\", \"归因\", \"决策背景\", \"audit\". English triggers: \"list/create/delete/save project\", \"project registry\", \"project status\", \"progress record\", \"project context\", \"rollback\", \"restore version\", \"why\", \"attribution\", \"audit\", \"project check\"."
-license: MIT License
-metadata:
-  version: "1.0.6"
 ---
 
 # project-registry
@@ -274,6 +271,12 @@ CLAUDE.md 初始模板见底部。
 | 更新记录 | 进入项目目录 | ✅ 手动触发更新 |
 | 保存 | 进入项目目录，**保存后不退出，留在目录** | ✅ 自动更新 |
 | 退出/返回 | **先更新 CLAUDE.md，再退回 `~`** | ✅ 自动更新 |
+
+### 📌 cwd 纪律（强制）
+
+打开项目后**持续保持 cwd 在项目根目录**；临时读外部文件优先用**绝对路径**；确需 cd 离开时，读完**立即切回项目根**。任何跨目录操作结束时，`pwd` 确认在项目根。
+
+> **原理**：层 1 / 层 2 三个 hooks 脚本（transcript-sync.py / auto-summary.py / session-end.py）全部基于 `os.getcwd()` 定位当前项目（`is_project_dir()` 逻辑）——cwd 在 `~/projects/<key>/` 下才操作该项目，否则**跳过**。cwd 漂移会导致：保鲜/transcript 同步写到错误项目，或全部跳过；会话结束收尾（备份+git 提交）漏掉当前项目。
 
 ## 安全机制
 
