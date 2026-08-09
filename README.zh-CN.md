@@ -33,7 +33,7 @@
 | **自动备份（默认）** | `Stop` hook → transcript 按会话存档到 `<项目>/.memory/transcripts/`（幂等）· `SessionEnd` hook → 备份轮转 + git 提交 | 安全——强杀终端也不丢，对话原文跨会话保留 |
 | **手动保存** | "保存项目"/"退出"强制全面更新 CLAUDE.md | 质量——深思熟虑、有据可查的记录 |
 
-两种记忆职责刻意不重叠：Claude Code 内置 auto-memory 管 *Claude 的*跨会话记忆，自动备份保证 *你的项目数据什么都不丢*（保存时 CLAUDE.md，每次响应 transcript 原文）。
+两种记忆职责刻意不重叠：Claude Code 内置 auto-memory 管 *Claude 的*跨会话记忆，自动备份保证 *对话原文永不丢*（每次响应存档，强杀终端也不丢）；而 CLAUDE.md 的整理记录，需要手动保存。
 
 **手动保存是最终记录。** 保存/退出时强制全面更新 CLAUDE.md：补录决策（含 WHY）、按优先级重排下一步行动。
 

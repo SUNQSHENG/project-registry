@@ -35,7 +35,7 @@ Your project lives in ~/projects/<key>/
 | **Auto-backup (default)** | `Stop` hook → transcript archived per-session into `<project>/.memory/transcripts/` (idempotent) · `SessionEnd` hook → backup rotation + git commit | Safety — survives even a killed terminal; raw conversation kept across sessions |
 | **Manual save** | "save project" / "exit" forces a full CLAUDE.md update | Quality — a considered, attributed record |
 
-The two memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, and auto-backup guarantees *your project's data is never lost* (CLAUDE.md on save, raw transcripts every response).
+The two memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, and auto-backup guarantees *the raw conversation is never lost* (archived every response, safe even if the terminal is killed). The organized CLAUDE.md record, however, requires manual save.
 
 **Manual save is the authoritative record.** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized.
 
