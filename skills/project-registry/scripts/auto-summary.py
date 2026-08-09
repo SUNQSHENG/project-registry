@@ -253,6 +253,10 @@ def main() -> int:
 
     msgs = read_transcript(transcript)
     state = load_state(project_dir)
+    # 会话重置检测：transcript 是覆盖式快照（新会话覆盖旧会话），
+    # 旧会话 offset 越界（offset > 当前消息数）→ 重置指针，重新消费新会话
+    if state.get("offset", 0) > len(msgs):
+        state["offset"] = 0
     new_msgs = msgs[state.get("offset", 0):]
 
     # 节流：新消息不足 或 时间未到

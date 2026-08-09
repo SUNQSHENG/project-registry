@@ -21,7 +21,23 @@ import urllib.error
 from pathlib import Path
 
 HOME = Path.home()
-PROJECTS_ROOT = HOME / "projects"
+
+CONFIG_FILE = HOME / ".claude" / "skills" / "project-registry" / "config.json"
+
+
+def get_projects_root() -> Path:
+    """项目根目录：优先 config.json 的 projectsRoot，默认 ~/projects"""
+    try:
+        cfg = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        r = cfg.get("projectsRoot")
+        if r:
+            return Path(r).expanduser()
+    except Exception:
+        pass
+    return HOME / "projects"
+
+
+PROJECTS_ROOT = get_projects_root()
 THROTTLE_MIN = 10          # 分钟
 THROTTLE_MSGS = 10         # 条
 
@@ -237,6 +253,10 @@ def main() -> int:
 
     msgs = read_transcript(transcript)
     state = load_state(project_dir)
+    # 会话重置检测：transcript 是覆盖式快照（新会话覆盖旧会话），
+    # 旧会话 offset 越界（offset > 当前消息数）→ 重置指针，重新消费新会话
+    if state.get("offset", 0) > len(msgs):
+        state["offset"] = 0
     new_msgs = msgs[state.get("offset", 0):]
 
     # 节流：新消息不足 或 时间未到
