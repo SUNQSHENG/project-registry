@@ -13,7 +13,7 @@ Personal developers juggle several projects at once — work, side projects, lea
 | "Which projects do I even have?" | **One registry** — every project in a single `~/projects/PROJECTS.json`, with CRUD, search and stats |
 | "What did I do last time?" | **AI-readable logs** — each project has a `CLAUDE.md` (auto-loaded every session) with status, decisions, todos and **prioritized next actions** |
 | "Why did I choose X?" | **Decision attribution** — "why X" returns the decision timeline with reasons and impact |
-| "I forgot to save" | **Auto-backup hooks** — transcript snapshots every response, backup + commit on exit (zero dependencies) |
+| "I forgot to save" | **Auto-backup hooks** — transcript archived every response, backup + commit on exit (zero dependencies) |
 | "What did I say last time?" | **Transcript history** — every session's raw conversation is archived in the project, so unrecorded work is always recoverable |
 | "I broke something" | **Rollback** — diff-confirmed version restore for CLAUDE.md, files and the registry |
 
@@ -25,14 +25,14 @@ Personal developers juggle several projects at once — work, side projects, lea
 Your project lives in ~/projects/<key>/
   PROJECTS.json      ← identity index (name, status, description, updated-at)
   <key>/CLAUDE.md    ← deep content (status, decisions, todos, next actions)
-  <key>/.memory/     ← transcript snapshots (gitignored, never committed)
+  <key>/.memory/     ← transcript archives (gitignored, never committed)
 ```
 
 | Layer | Mechanism | Responsibility |
 |:---|:---|:---|
 | **Native loading** | Claude Code auto-loads `CLAUDE.md` when a session starts in the project dir | Depth — what happened, what's next |
 | **Registry** | `PROJECTS.json`, accessed when *you* ask (list / open / search / stats) | Identity — which projects exist, their state |
-| **Auto-backup (default)** | `Stop` hook → transcript snapshot · `SessionEnd` hook → backup rotation + git commit | Safety — data survives even a killed terminal |
+| **Auto-backup (default)** | `Stop` hook → transcript archive · `SessionEnd` hook → backup rotation + git commit | Safety — data survives even a killed terminal |
 | **Transcript history** | `Stop` hook archives each session into `<project>/.memory/transcripts/` (idempotent) | Backup — raw conversation survives across sessions |
 | **Manual save** | "save project" / "exit" forces a full CLAUDE.md update | Quality — a considered, attributed record |
 
@@ -66,7 +66,7 @@ The two memory functions are deliberately non-overlapping: Claude Code's built-i
 | 📜 Decision discipline | Every decision records WHY (mandatory) — traceable months later |
 | 🔎 Decision attribution | "Why X" → decision timeline + reason chain + status + impact |
 | 💾 Save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
-| 🔁 Auto-backup (hooks) | transcript snapshot + backup/commit (silent, zero deps) |
+| 🔁 Auto-backup (hooks) | transcript archive + backup/commit (silent, zero deps) |
 | 🗂️ Transcript history | Per-session raw conversation archived (silent, zero deps) |
 | 🔍 MD health check | Batch-verify `CLAUDE.md` + `.git` exist for every registered project |
 | ↩️ Version rollback | CLAUDE.md / project files / registry — diff confirm + new commit |
@@ -144,7 +144,7 @@ Projects live under a configurable root — the default is `~/projects/`; you ca
 
 Two layers, fully silent, run only inside the projects root (default `~/projects/`, configurable):
 
-**Auto-backup - mechanical snapshot (zero dependencies, on by default)**
+**Auto-backup - transcript archive (zero dependencies, on by default)**
 
 | Hook | Action |
 |:---|:---|
