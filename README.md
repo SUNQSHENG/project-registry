@@ -143,11 +143,11 @@ Projects live under a configurable root — the default is `~/projects/`; you ca
 
 Two layers, fully silent, run only inside the projects root (default `~/projects/`, configurable):
 
-**Auto-backup - transcript archive (zero dependencies, on by default)**
+**Auto-backup (zero dependencies, on by default)**
 
 | Hook | Action |
 |:---|:---|
-| `Stop` (after every response) | Sync transcript to `<project>/.memory/` (second-level) |
+| `Stop` (after every response) | Archive transcript per-session into `<project>/.memory/transcripts/` (second-level, idempotent) |
 | `SessionEnd` | Backup CLAUDE.md (rotation of 10) + git commit |
 
 `.memory/` contains raw conversation - it is **gitignored** and never committed. Auto-backup keeps data safe even if you kill the terminal: nothing is ever lost.
@@ -179,9 +179,9 @@ Two layers, fully silent, run only inside the projects root (default `~/projects
 
 On first use the skill will ask whether you want to enable auto-backup — it explains exactly what gets authorized (hooks in your `settings.json`, local-only, nothing leaves your machine) and what you get (nothing is ever lost). Skippable, asked once.
 
-**Transcript history (raw conversation, on by default)**
+**Unrecorded-work recovery (save-time fallback)**
 
-Every session's raw conversation is archived into `<project>/.memory/transcripts/` — recover unrecorded work by comparing the latest archive against the last save time. Zero configuration; auto-backup keeps data safe and all core features work out of the box.
+Saving a project records the save moment (saved_at); when you open a project and the latest archive is newer than the save moment, the session resume reads the tail of the conversation — **unrecorded work is never silently lost** (it asks before reading large volumes). Zero configuration; auto-backup keeps data safe and all core features work out of the box.
 
 **Portability - can I use this outside Claude Code?**
 

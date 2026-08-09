@@ -141,11 +141,11 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 机制全部后台静默，只在**项目根**（默认 `~/projects/`，可自定义）项目目录生效：
 
-**自动备份 - transcript 存档（零依赖，默认开启）**
+**自动备份（零依赖，默认开启）**
 
 | Hook | 动作 |
 |:---|:---|
-| `Stop`（每次响应后） | transcript 同步到 `<项目>/.memory/`（秒级） |
+| `Stop`（每次响应后） | transcript 按会话存档到 `<项目>/.memory/transcripts/`（秒级，幂等） |
 | `SessionEnd` | CLAUDE.md 备份（10 份轮转）+ git 提交 |
 
 `.memory/` 含对话原文——已 gitignore，绝不进仓库。强杀终端也不丢数据。
@@ -177,11 +177,9 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 首次使用 skill 会询问是否启用自动备份——**讲清楚授权什么**（向你的 settings.json 添加 hooks，仅本地，不向任何外部服务发送数据）**和带来什么**（数据永不丢）。可跳过，只问一次。
 
-**transcript 历史（对话原文，默认开启）**
+**未入账恢复（保存时刻兜底）**
 
-每个会话的对话原文存档到 `<项目>/.memory/transcripts/`——将最近存档与上次保存时刻对比，可恢复未收录的工作。
-
-零配置即用：自动备份数据安全 + 全部核心功能。
+保存项目会记录保存时刻（saved_at）；打开项目时若最近存档晚于保存时刻，会话回顾会读取对话原文尾部——**未保存的对话永不静默丢失**（量大时询问是否完整读取）。零配置即用：自动备份数据安全 + 全部核心功能。
 
 **可移植性 —— 能在 Claude 之外用吗？**
 
