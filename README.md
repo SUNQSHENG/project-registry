@@ -37,7 +37,7 @@ Your project lives in ~/projects/<key>/
 
 The two memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, and auto-backup guarantees *the raw conversation is never lost* (archived every response, safe even if the terminal is killed). The organized CLAUDE.md record, however, requires manual save.
 
-**Manual save is the authoritative record.** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized.
+**Manual save produces the final record (CLAUDE.md).** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized.
 
 **How do I manually save?** Just tell the agent **"save"** or **"exit"** in the conversation — there's no button and no command, that's it. You can say it anytime; it works regardless of whether auto-backup is enabled.
 
