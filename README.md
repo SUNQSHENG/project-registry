@@ -125,7 +125,7 @@ Restart Claude Code. Then type "list projects" — or simply use `/project-regis
 New project structure:
 
 ```
-~/projects/
+<projects-root>/           # default: ~/projects/ (configurable)
   PROJECTS.json            # registry (single source of truth)
   <project-key>/
     README.md              # for humans: background & scope
@@ -133,6 +133,8 @@ New project structure:
     .memory/               # auto-backup transcripts (gitignored, never committed)
     .git/                  # git init automatically (CLAUDE.md must be at .git level)
 ```
+
+Projects live under a configurable root — the default is `~/projects/`; you can change it during first-use onboarding or by saying "set project path" (existing projects are migrated on request).
 
 `CLAUDE.md` is the heart of it — Claude Code auto-loads it every session, so long-running projects never lose context.
 

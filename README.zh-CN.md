@@ -123,7 +123,7 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 新建项目结构：
 
 ```
-~/projects/
+<项目根>/                  # 默认：~/projects/（可自定义）
   PROJECTS.json            # 项目注册清单（唯一权威来源）
   <project-key>/
     README.md              # 面向人：背景和范围
@@ -131,6 +131,8 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
     .memory/               # 自动备份 transcript（gitignore，绝不提交）
     .git/                  # 自动 git init（CLAUDE.md 生效前提）
 ```
+
+项目根**默认 `~/projects/`**，可在首次使用引导（检查 3）或说「设置项目路径」时自定义（存量项目可自动迁移）。
 
 `CLAUDE.md` 是核心——Claude Code 每次会话自动加载它，长项目不会丢失上下文。
 

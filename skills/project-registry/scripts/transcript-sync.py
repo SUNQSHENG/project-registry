@@ -14,7 +14,23 @@ import sys
 from pathlib import Path
 
 HOME = Path.home()
-PROJECTS_ROOT = HOME / "projects"
+
+CONFIG_FILE = HOME / ".claude" / "skills" / "project-registry" / "config.json"
+
+
+def get_projects_root() -> Path:
+    """项目根目录：优先 config.json 的 projectsRoot，默认 ~/projects"""
+    try:
+        cfg = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        r = cfg.get("projectsRoot")
+        if r:
+            return Path(r).expanduser()
+    except Exception:
+        pass
+    return HOME / "projects"
+
+
+PROJECTS_ROOT = get_projects_root()
 
 
 def is_project_dir(cwd: str) -> Path | None:
