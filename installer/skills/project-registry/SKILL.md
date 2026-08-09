@@ -128,7 +128,11 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
 5. **transcript 兜底判定**（未入账检测，双重保险）：
    - 读 `.memory/state.json` 的 `saved_at`（保存流程写入的保存时刻）
    - `saved_at` 缺失（旧项目）→ 直接触发
-   - 存在 → 最近存档（`.memory/transcripts/` 最新一份）的 mtime > `saved_at`？是 → 触发
+   - 存在 → **两步判定**（仅扫描 mtime > `saved_at` 的存档，一般即最新一份）：
+     ① 最近存档（`.memory/transcripts/` 最新一份）的 mtime > `saved_at`？否 → **不触发**（保存后无任何新同步，常态零成本）
+     ② 是 → 这些存档中是否存在 `saved_at` **之后产生的实质 user 消息**（解析 jsonl 的 `timestamp` 字段：timestamp > saved_at 且 type=user、content 为非空文本；「保存/退出」命令已被保存流程的结束时校准排除在基准前）？
+        - 无 → **残留同步**（校准后到汇报间的 Stop 同步仍会推新 mtime，或非保存流程的残留）→ **静默跳过**，不读尾部
+        - 有 → **触发**
    - **触发** → 读最近存档**尾部 30 条**做快览并入摘要；未入账量大（>30 条或多份存档）→ **弹 AskUserQuestion 卡片**：完整读 / 读尾部 / 跳过（成本用户决策）
    - ⚠️ **串扰分辨**：存档为整个会话（跨项目时会含其他项目对话）——读取时**分辨内容归属**，只提取当前项目相关内容并入摘要，其他项目内容忽略
    - **不触发** → 只读 CLAUDE.md（常态，零额外成本）
@@ -203,7 +207,7 @@ CLAUDE.md 初始模板见底部。
 ### 💾 保存项目
 
 1. **备份** CLAUDE.md（到 `<skill 目录>/backups/`，即 `~/.claude/skills/project-registry/backups/`）
-2. **写保存时刻**（transcript 兜底基准）：`.memory/state.json` 写 `saved_at` = 当前最新 transcript 存档的 mtime（双刻度互校：与当前时间偏差 >5 分钟则告警提示环境异常；文件不存在则记当前时间）
+2. **写保存时刻**（transcript 兜底基准）：`.memory/state.json` 写 `saved_at` = 当前最新 transcript 存档的 mtime（双刻度互校：与当前时间偏差 >5 分钟则告警提示环境异常；文件不存在则记当前时间）。**结束时校准**：步骤 4 提交后，再读一次最新存档 mtime 写回 `saved_at`（原因：「保存/退出」命令本身的 user 消息 timestamp 可能晚于开始时写入的 saved_at——实测确认——不校准则下次进入必误报「未入账」；校准后命令落在基准前，判定精确）
 3. **回顾本次对话**，将以下内容追加或更新到 CLAUDE.md：
    - 最新进展和完成事项
    - 新增的架构决策（日常决策按「📜 决策记录纪律」格式补录，**原因不可省略**）
