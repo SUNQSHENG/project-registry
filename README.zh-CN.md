@@ -59,7 +59,7 @@
 | 功能 | 说明 |
 |:---|:---|
 | 📋 项目注册表 | `~/projects/PROJECTS.json` 增删改查 + 统计 |
-| 🆕 新建项目 | 一条命令搭好：key + 目录 + README/CLAUDE.md + .gitignore + git init + 注册清单 |
+| ➕ 新建项目 | 一条命令搭好：key + 目录 + README/CLAUDE.md + .gitignore + git init + 注册清单 |
 | 🧭 会话恢复 | 进入项目 → 回顾上次进展 → 确认续接 |
 | 📜 决策纪律 | 每条决策必写原因（强制）——三个月后可追溯 |
 | 🔎 决策归因 | "为什么 X" → 决策时间线 + 原因链 + 状态 + 影响 |
@@ -190,7 +190,7 @@ export PR_API_MODEL=你的模型名                      # <-- 如 deepseek-v4-f
 
 **可移植性 —— 能在 Claude 之外用吗？**
 
-核心工作流（注册表、会话恢复、手动保存、决策归因、回滚）就是指令 + JSON + git，可以移植到其他 AI agent（Codex / Gemini CLI / Cursor 等 AGENTS.md 类体系），把 SKILL.md 的指令按其格式重述即可。**Claude Code 专属的部分**：自动备份两层（层1/层2）——依赖 Claude 的 transcript 文件与 Stop/SessionEnd hooks，因此自动备份仅限 Claude。核心功能不依赖它，照样完整可用。
+核心工作流（注册表、新建项目、会话恢复、CLAUDE.md 保存、决策归因、回滚）就是指令 + JSON + git，可以移植到其他 AI agent（Codex / Gemini CLI / Cursor 等 AGENTS.md 类体系），把 SKILL.md 的指令按其格式重述即可。**Claude Code 专属的部分**：自动备份两层（层1/层2）——依赖 Claude 的 transcript 文件与 Stop/SessionEnd hooks，因此自动备份仅限 Claude。核心功能不依赖它，照样完整可用。
 
 ## 示例注册表
 
