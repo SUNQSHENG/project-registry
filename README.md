@@ -32,8 +32,7 @@ Your project lives in ~/projects/<key>/
 |:---|:---|:---|
 | **Native loading** | Claude Code auto-loads `CLAUDE.md` when a session starts in the project dir | Depth — what happened, what's next |
 | **Registry** | `PROJECTS.json`, accessed when *you* ask (list / open / search / stats) | Identity — which projects exist, their state |
-| **Auto-backup (default)** | `Stop` hook → transcript archive · `SessionEnd` hook → backup rotation + git commit | Safety — data survives even a killed terminal |
-| **Transcript history** | `Stop` hook archives each session into `<project>/.memory/transcripts/` (idempotent) | Backup — raw conversation survives across sessions |
+| **Auto-backup (default)** | `Stop` hook → transcript archived per-session into `<project>/.memory/transcripts/` (idempotent) · `SessionEnd` hook → backup rotation + git commit | Safety — survives even a killed terminal; raw conversation kept across sessions |
 | **Manual save** | "save project" / "exit" forces a full CLAUDE.md update | Quality — a considered, attributed record |
 
 The two memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, and auto-backup guarantees *your project's data is never lost* (CLAUDE.md on save, raw transcripts every response).
