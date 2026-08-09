@@ -14,7 +14,7 @@ Personal developers juggle several projects at once — work, side projects, lea
 | "What did I do last time?" | **AI-readable logs** — each project has a `CLAUDE.md` (auto-loaded every session) with status, decisions, todos and **prioritized next actions** |
 | "Why did I choose X?" | **Decision attribution** — "why X" returns the decision timeline with reasons and impact |
 | "I forgot to save" | **Auto-backup hooks** — transcript snapshots every response, backup + commit on exit (Layer 1, zero dependencies) |
-| "CLAUDE.md went stale" | **Auto-summary (optional)** — an LLM of your choice extracts progress into CLAUDE.md (Layer 2) |
+| "What did I say last time?" | **Transcript history** — every session's raw conversation is archived in the project, so unrecorded work is always recoverable |
 | "I broke something" | **Rollback** — diff-confirmed version restore for CLAUDE.md, files and the registry |
 
 **Design philosophy: intent-driven, never pushy.** The project system is *your* workflow, not the default state of a session. Claude never advertises your projects unprompted — it answers when you ask, and recognizes you when you *are* in a project directory.
@@ -33,14 +33,14 @@ Your project lives in ~/projects/<key>/
 | **Native loading** | Claude Code auto-loads `CLAUDE.md` when a session starts in the project dir | Depth — what happened, what's next |
 | **Registry** | `PROJECTS.json`, accessed when *you* ask (list / open / search / stats) | Identity — which projects exist, their state |
 | **Layer 1 (default)** | `Stop` hook → transcript snapshot · `SessionEnd` hook → backup rotation + git commit | Safety — data survives even a killed terminal |
-| **Layer 2 (optional)** | Your own OpenAI-compatible API extracts the conversation into CLAUDE.md (throttled) | Auto-summary — CLAUDE.md never goes stale |
+| **Transcript history** | `Stop` hook archives each session into `<project>/.memory/transcripts/` (idempotent) | Backup — raw conversation survives across sessions |
 | **Manual save** | "save project" / "exit" forces a full CLAUDE.md update | Quality — a considered, attributed record |
 
-The three memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, Layer 2 auto-summarizes *your project's document*, and Layer 1 guarantees *nothing is ever lost*.
+The two memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, and Layer 1 guarantees *your project's data is never lost* (CLAUDE.md on save, raw transcripts every response).
 
-**Auto-summary ≠ manual save.** Layer 2 auto-summary is *incremental* — a real-time draft that keeps CLAUDE.md current between saves. **It cannot replace manual save.** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized. Auto-summary keeps the record *current*; manual save keeps it *right*. The final record is always the one you save manually.
+**Manual save is the authoritative record.** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized. The final record is always the one you save manually.
 
-**How do I manually save?** Just tell the agent **"save"** or **"exit"** in the conversation — there's no button and no command, that's it. You can say it anytime; it works regardless of whether Layer 1/2 are enabled.
+**How do I manually save?** Just tell the agent **"save"** or **"exit"** in the conversation — there's no button and no command, that's it. You can say it anytime; it works regardless of whether Layer 1 is enabled.
 
 ## Compared to alternatives
 
@@ -51,10 +51,9 @@ The three memory functions are deliberately non-overlapping: Claude Code's built
 | Decision attribution ("why X" traceable) | ✅ | ❌ |
 | Project health check (batch audit CLAUDE.md/.git) | ✅ | ❌ |
 | Version rollback (CLAUDE.md / files / registry) | ✅ | ❌ |
-| Project `CLAUDE.md` auto-summary | ✅ (optional, any API) | ❌ (writes global memory dir) |
 | Transcript safety / recovery | ✅ seconds-level + rotation + git | partial |
 | Works in Chinese | ✅ | ✅ |
-| Privacy | Local-first; Layer 2 sends only to the endpoint you configure | local |
+| Privacy | Local-first, nothing leaves your machine | local |
 
 ## Features
 
@@ -67,12 +66,14 @@ The three memory functions are deliberately non-overlapping: Claude Code's built
 | 🔎 Decision attribution | "Why X" → decision timeline + reason chain + status + impact |
 | 💾 Save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
 | 🔁 Auto-backup (hooks) | Layer 1: transcript snapshot + backup/commit (silent, zero deps) |
-| 🔁 Auto-summary (API) | Layer 2: conversation auto-extracted into CLAUDE.md (optional) |
+| 🗂️ Transcript history | Per-session raw conversation archived (silent, zero deps) |
 | 🔍 MD health check | Batch-verify `CLAUDE.md` + `.git` exist for every registered project |
 | ↩️ Version rollback | CLAUDE.md / project files / registry — diff confirm + new commit |
 | 🛡️ Backup rotation | PROJECTS.json / CLAUDE.md / SKILL.md backups, keep latest 10 each |
 | 📁 Optional doc skeleton | Code projects: optional `docs/SPEC.md` + `DESIGN.md` per feature |
 | 🌍 Universal | No hardcoded paths, works for business and code projects alike |
+
+> **Note:** Auto-summary (Layer 2, API-based CLAUDE.md extraction) was removed in v1.2.0 — manual save + transcript history cover the same need more reliably.
 
 ## Install
 
@@ -160,8 +161,7 @@ Two layers, fully silent, run only inside the projects root (default `~/projects
       {
         "matcher": "always",
         "hooks": [
-          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/transcript-sync.py" },
-          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/auto-summary.py" }
+          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/transcript-sync.py" }
         ]
       }
     ],
@@ -179,18 +179,9 @@ Two layers, fully silent, run only inside the projects root (default `~/projects
 
 On first use the skill will ask whether you want to enable auto-backup — it explains exactly what gets authorized (hooks in your `settings.json`, local-only, nothing leaves your machine) and what you get (nothing is ever lost). Skippable, asked once.
 
-**Layer 2 - Auto-summary (optional, bring your own key)**
+**Transcript history (raw conversation, on by default)**
 
-Keeps CLAUDE.md current by extracting progress / decisions / todos / next actions from the conversation and merging them (throttled: >=10 new messages or >=10 minutes). Works with **any OpenAI-compatible API**:
-
-```bash
-# any OpenAI-compatible API works (DeepSeek / OpenAI / Qwen / local Ollama - same shape)
-export PR_API_BASE_URL=https://your-provider.example.com/v1   # <-- replace with your provider base URL
-export PR_API_KEY=sk-your-key                                 # <-- your own key
-export PR_API_MODEL=your-model                                # <-- e.g. deepseek-v4-flash / gpt-4o-mini / qwen-plus
-```
-
-Without a key you still get Layer 1 plus all core features; with a key you additionally get an always-current CLAUDE.md. Conversation is only sent to the endpoint you configure. On first use the skill asks whether you want to configure a key (skippable, asked once).
+Every session's raw conversation is archived into `<project>/.memory/transcripts/` — recover unrecorded work by comparing the latest archive against the last save time. Zero configuration; Layer 1 keeps data safe and all core features work out of the box.
 
 **Portability - can I use this outside Claude Code?**
 
@@ -203,7 +194,7 @@ See [examples/PROJECTS.example.json](examples/PROJECTS.example.json) for a sampl
 ## Development
 
 - `skills/project-registry/SKILL.md` — the skill itself (self-contained, no dependencies)
-- `skills/project-registry/scripts/` — auto-backup hooks (transcript-sync / auto-summary / session-end)
+- `skills/project-registry/scripts/` — auto-backup hooks (transcript-sync / session-end)
 - Design decisions: [docs/adr/](docs/adr/)
 
 ## License

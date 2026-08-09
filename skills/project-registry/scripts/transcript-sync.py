@@ -93,6 +93,14 @@ def main() -> int:
         shutil.copy2(transcript, dest)
     except OSError:
         return 0  # 静默失败，下次再试
+    # 按会话历史存档（幂等：同一会话文件名覆盖；跨会话保留原文，
+    # 供「未入账兜底」——会话回顾时 mtime > saved_at 判定读取）
+    try:
+        arch = mem / "transcripts"
+        arch.mkdir(exist_ok=True)
+        shutil.copy2(transcript, arch / transcript.name)
+    except OSError:
+        pass
     return 0
 
 

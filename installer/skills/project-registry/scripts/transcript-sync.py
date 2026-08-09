@@ -14,7 +14,23 @@ import sys
 from pathlib import Path
 
 HOME = Path.home()
-PROJECTS_ROOT = HOME / "projects"
+
+CONFIG_FILE = HOME / ".claude" / "skills" / "project-registry" / "config.json"
+
+
+def get_projects_root() -> Path:
+    """项目根目录：优先 config.json 的 projectsRoot，默认 ~/projects"""
+    try:
+        cfg = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        r = cfg.get("projectsRoot")
+        if r:
+            return Path(r).expanduser()
+    except Exception:
+        pass
+    return HOME / "projects"
+
+
+PROJECTS_ROOT = get_projects_root()
 
 
 def is_project_dir(cwd: str) -> Path | None:
@@ -77,6 +93,14 @@ def main() -> int:
         shutil.copy2(transcript, dest)
     except OSError:
         return 0  # 静默失败，下次再试
+    # 按会话历史存档（幂等：同一会话文件名覆盖；跨会话保留原文，
+    # 供「未入账兜底」——会话回顾时 mtime > saved_at 判定读取）
+    try:
+        arch = mem / "transcripts"
+        arch.mkdir(exist_ok=True)
+        shutil.copy2(transcript, arch / transcript.name)
+    except OSError:
+        pass
     return 0
 
 

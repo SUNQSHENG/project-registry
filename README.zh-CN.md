@@ -12,7 +12,7 @@
 | "上次做到哪了？" | **AI 可读的开发记录**——每个项目有 `CLAUDE.md`（每次会话自动加载），记录状态、决策、待办和**按优先级的下一步行动** |
 | "当初为什么选 X？" | **决策归因**——"为什么 X" 返回决策时间线（原因 + 影响） |
 | "我忘了保存" | **自动备份 hooks**——每次响应后 transcript 秒级快照，退出时备份 + 提交（层 1，零依赖） |
-| "CLAUDE.md 过期了" | **自动摘要（可选）**——你指定的 LLM 把对话提炼进 CLAUDE.md（层 2） |
+| "上次说了什么？" | **transcript 历史**——每个会话的对话原文存档在项目内，未收录的工作随时可恢复 |
 | "我改坏了东西" | **版本回滚**——CLAUDE.md / 项目文件 / 注册表差异确认后恢复 |
 
 **设计哲学：意图驱动，不打扰。** 项目体系是*你的*工作流，不是会话的默认态。Claude 从不主动推销你的项目——你开口它才动，你在项目目录里它才认得你。
@@ -31,14 +31,14 @@
 | **原生加载** | Claude Code 在项目目录开会话时自动加载 `CLAUDE.md` | 深度——发生了什么、下一步做什么 |
 | **注册表** | `PROJECTS.json`，*你*开口时访问（查看/打开/搜索/统计） | 身份——有哪些项目、各是什么状态 |
 | **层 1（默认）** | `Stop` hook → transcript 快照 · `SessionEnd` hook → 备份轮转 + git 提交 | 安全——强杀终端也不丢 |
-| **层 2（可选）** | 你自己的 OpenAI 兼容 API 提炼对话进 CLAUDE.md（节流） | 自动摘要——CLAUDE.md 永不过期 |
+| **transcript 历史** | `Stop` hook 按会话存档到 `<项目>/.memory/transcripts/`（幂等） | 备份——对话原文跨会话保留 |
 | **手动保存** | "保存项目"/"退出"强制全面更新 CLAUDE.md | 质量——深思熟虑、有据可查的记录 |
 
-三种记忆职责刻意不重叠：Claude Code 内置 auto-memory 管 *Claude 的*跨会话记忆，层 2 管 *你的项目文档*自动摘要，层 1 保证 *什么都不丢*。
+两种记忆职责刻意不重叠：Claude Code 内置 auto-memory 管 *Claude 的*跨会话记忆，层 1 保证 *你的项目数据什么都不丢*（保存时 CLAUDE.md，每次响应 transcript 原文）。
 
-**自动摘要 ≠ 手动保存。** 层 2 自动摘要是*增量*草稿——实时草稿，让 CLAUDE.md 在两次保存之间保持不过期。**它不能代替手动保存**：保存/退出时的全面更新 CLAUDE.md，才补录决策（含 WHY）、按优先级重排下一步行动。自动摘要让记录"保持最新"，手动保存让记录"正确"——最终版本永远是你手动保存的那份。
+**手动保存是最终记录。** 保存/退出时强制全面更新 CLAUDE.md：补录决策（含 WHY）、按优先级重排下一步行动。最终版本永远是你手动保存的那份。
 
-**怎么手动保存？** 在对话中直接对 agent 说「保存」或「退出」即可——**没有按钮、没有命令**，就是这么一句话。随时可以说，不依赖层 1/层 2 是否启用。
+**怎么手动保存？** 在对话中直接对 agent 说「保存」或「退出」即可——**没有按钮、没有命令**，就是这么一句话。随时可以说，不依赖层 1 是否启用。
 
 ## 与其他方案对比
 
@@ -49,10 +49,9 @@
 | 决策归因（"为什么 X" 可回溯） | ✅ | ❌ |
 | 项目健康检查（批量体检 CLAUDE.md/.git） | ✅ | ❌ |
 | 版本回滚（CLAUDE.md/文件/注册表） | ✅ | ❌ |
-| 项目 CLAUDE.md 自动摘要 | ✅（可选，任意 API） | ❌（写全局记忆目录） |
 | transcript 安全/恢复 | ✅ 秒级 + 轮转 + git | 部分 |
 | 中文支持 | ✅ | ✅ |
-| 隐私 | 本地优先；层 2 只发到你配置的端点 | 本地 |
+| 隐私 | 本地优先，数据不出本机 | 本地 |
 
 ## 功能
 
@@ -65,12 +64,14 @@
 | 🔎 决策归因 | "为什么 X" → 决策时间线 + 原因链 + 状态 + 影响 |
 | 💾 退出保存 | 保存/退出**强制**更新 CLAUDE.md 并写出按优先级的下一步行动 |
 | 🔁 自动备份（hooks） | 层1：transcript 快照 + 备份/提交（静默、零依赖） |
-| 🔁 自动摘要（API） | 层2：对话自动提炼进 CLAUDE.md（可选） |
+| 🗂️ transcript 历史 | 每个会话对话原文存档（静默、零依赖） |
 | 🔍 MD 健康检查 | 批量检查所有注册项目的 CLAUDE.md + .git |
 | ↩️ 版本回滚 | CLAUDE.md / 项目文件 / 注册表——差异确认 + 新提交 |
 | 🛡️ 备份轮转 | PROJECTS.json / CLAUDE.md / SKILL.md 各保留最近 10 份 |
 | 📁 可选文档骨架 | 代码类项目可选 docs/SPEC.md + DESIGN.md |
 | 🌍 通用 | 无硬编码路径，业务项目与代码项目都适用 |
+
+> **说明：** 自动摘要（层 2，基于 API 的 CLAUDE.md 提炼）已在 v1.2.0 移除——手动保存 + transcript 历史更可靠地覆盖同一需求。
 
 ## 安装
 
@@ -138,7 +139,7 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 ## 自动备份（hooks，静默执行）
 
-两层机制，全部后台静默，只在**项目根**（默认 `~/projects/`，可自定义）项目目录生效：
+机制全部后台静默，只在**项目根**（默认 `~/projects/`，可自定义）项目目录生效：
 
 **层 1 机械快照（零依赖，默认开启）**
 
@@ -158,8 +159,7 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
       {
         "matcher": "always",
         "hooks": [
-          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/transcript-sync.py" },
-          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/auto-summary.py" }
+          { "type": "command", "command": "python ~/.claude/skills/project-registry/scripts/transcript-sync.py" }
         ]
       }
     ],
@@ -177,22 +177,15 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 首次使用 skill 会询问是否启用自动备份——**讲清楚授权什么**（向你的 settings.json 添加 hooks，仅本地，不向任何外部服务发送数据）**和带来什么**（数据永不丢）。可跳过，只问一次。
 
-**层 2 自动摘要（可选，用自己的 key）**
+**transcript 历史（对话原文，默认开启）**
 
-自动提取进展/决策/待办/下一步并合并更新 CLAUDE.md（节流：≥10 条新消息或 ≥10 分钟）。**任意 OpenAI 兼容 API**：
+每个会话的对话原文存档到 `<项目>/.memory/transcripts/`——将最近存档与上次保存时刻对比，可恢复未收录的工作。
 
-```bash
-# 任意 OpenAI 兼容 API 均可（DeepSeek / OpenAI / 通义 / 本地 Ollama 同格式）
-export PR_API_BASE_URL=https://你的提供商地址/v1   # <-- 替换为你的提供商 base URL
-export PR_API_KEY=sk-你的key                        # <-- 你自己的 key
-export PR_API_MODEL=你的模型名                      # <-- 如 deepseek-v4-flash / gpt-4o-mini / qwen-plus
-```
-
-不配 key：层 1 数据安全 + 全部核心功能；配 key：额外获得 CLAUDE.md 自动摘要。对话只发送到你配置的端点。首次使用会询问是否配置（可跳过，只问一次）。
+零配置即用：层 1 数据安全 + 全部核心功能。
 
 **可移植性 —— 能在 Claude 之外用吗？**
 
-核心工作流（注册表、新建项目、会话恢复、CLAUDE.md 保存、决策归因、回滚）就是指令 + JSON + git，可以移植到其他 AI agent（Codex / Gemini CLI / Cursor 等 AGENTS.md 类体系），把 SKILL.md 的指令按其格式重述即可。**Claude Code 专属的部分**：自动备份两层（层1/层2）——依赖 Claude 的 transcript 文件与 Stop/SessionEnd hooks，因此自动备份仅限 Claude。核心功能不依赖它，照样完整可用。
+核心工作流（注册表、新建项目、会话恢复、CLAUDE.md 保存、决策归因、回滚）就是指令 + JSON + git，可以移植到其他 AI agent（Codex / Gemini CLI / Cursor 等 AGENTS.md 类体系），把 SKILL.md 的指令按其格式重述即可。**Claude Code 专属的部分**：自动备份（层 1）——依赖 Claude 的 transcript 文件与 Stop/SessionEnd hooks，因此自动备份仅限 Claude。核心功能不依赖它，照样完整可用。
 
 ## 示例注册表
 
@@ -201,7 +194,7 @@ export PR_API_MODEL=你的模型名                      # <-- 如 deepseek-v4-f
 ## 开发
 
 - `skills/project-registry/SKILL.md` — 技能本体（自包含，零依赖）
-- `skills/project-registry/scripts/` — 自动备份 hooks（transcript-sync / auto-summary / session-end）
+- `skills/project-registry/scripts/` — 自动备份 hooks（transcript-sync / session-end）
 - 设计决策： [docs/adr/](docs/adr/)
 
 ## 许可证
