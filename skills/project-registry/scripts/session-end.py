@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-project-registry · SessionEnd hook：会话结束收尾
+project-registry · SessionEnd hook：会话结束归档
 1) 备份 CLAUDE.md 到 skill 目录 backups/（10 份轮转，按末尾时间戳排序）
 2) 项目 git 提交（有变更才提交）
 静默执行，只做快操作（SessionEnd 窗口内被限制，禁止长任务）。
@@ -108,7 +108,7 @@ def git_commit(project_dir: Path):
                 capture_output=True, timeout=10,
             )
         subprocess.run(
-            ["git", "-C", str(project_dir), "commit", "-m", "自动备份：会话结束收尾（CLAUDE.md 变更）"],
+            ["git", "-C", str(project_dir), "commit", "-m", "自动备份：会话结束归档（CLAUDE.md 变更）"],
             capture_output=True, timeout=10,
         )
     except (subprocess.TimeoutExpired, OSError):

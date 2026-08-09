@@ -14,7 +14,7 @@ Personal developers juggle several projects at once — work, side projects, lea
 | "What did I do last time?" | **AI-readable logs** — each project has a `CLAUDE.md` (auto-loaded every session) with status, decisions, todos and **prioritized next actions** |
 | "Why did I choose X?" | **Decision attribution** — "why X" returns the decision timeline with reasons and impact |
 | "I forgot to save" | **Auto-backup hooks** — transcript snapshots every response, backup + commit on exit (Layer 1, zero dependencies) |
-| "CLAUDE.md went stale" | **Fresh-keeping (optional)** — an LLM of your choice extracts progress into CLAUDE.md (Layer 2) |
+| "CLAUDE.md went stale" | **Auto-summary (optional)** — an LLM of your choice extracts progress into CLAUDE.md (Layer 2) |
 | "I broke something" | **Rollback** — diff-confirmed version restore for CLAUDE.md, files and the registry |
 
 **Design philosophy: intent-driven, never pushy.** The project system is *your* workflow, not the default state of a session. Claude never advertises your projects unprompted — it answers when you ask, and recognizes you when you *are* in a project directory.
@@ -33,12 +33,12 @@ Your project lives in ~/projects/<key>/
 | **Native loading** | Claude Code auto-loads `CLAUDE.md` when a session starts in the project dir | Depth — what happened, what's next |
 | **Registry** | `PROJECTS.json`, accessed when *you* ask (list / open / search / stats) | Identity — which projects exist, their state |
 | **Layer 1 (default)** | `Stop` hook → transcript snapshot · `SessionEnd` hook → backup rotation + git commit | Safety — data survives even a killed terminal |
-| **Layer 2 (optional)** | Your own OpenAI-compatible API extracts the conversation into CLAUDE.md (throttled) | Freshness — CLAUDE.md never goes stale |
+| **Layer 2 (optional)** | Your own OpenAI-compatible API extracts the conversation into CLAUDE.md (throttled) | Auto-summary — CLAUDE.md never goes stale |
 | **Manual save** | "save project" / "exit" forces a full CLAUDE.md update | Quality — a considered, attributed record |
 
-The three memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, Layer 2 keeps *your project's document* fresh, and Layer 1 guarantees *nothing is ever lost*.
+The three memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, Layer 2 auto-summarizes *your project's document*, and Layer 1 guarantees *nothing is ever lost*.
 
-**Fresh-keeping ≠ manual save.** Layer 2 auto-fresh is *incremental* — a real-time draft that keeps CLAUDE.md current between saves. **It cannot replace manual save.** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized. Auto-fresh keeps the record *fresh*; manual save keeps it *right*. The final record is always the one you save manually.
+**Auto-summary ≠ manual save.** Layer 2 auto-summary is *incremental* — a real-time draft that keeps CLAUDE.md current between saves. **It cannot replace manual save.** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized. Auto-summary keeps the record *current*; manual save keeps it *right*. The final record is always the one you save manually.
 
 **How do I manually save?** Just tell the agent **"save"** or **"exit"** in the conversation — there's no button and no command, that's it. You can say it anytime; it works regardless of whether Layer 1/2 are enabled.
 
@@ -51,7 +51,7 @@ The three memory functions are deliberately non-overlapping: Claude Code's built
 | Decision attribution ("why X" traceable) | ✅ | ❌ |
 | Project health check (batch audit CLAUDE.md/.git) | ✅ | ❌ |
 | Version rollback (CLAUDE.md / files / registry) | ✅ | ❌ |
-| Project `CLAUDE.md` auto-fresh | ✅ (optional, any API) | ❌ (writes global memory dir) |
+| Project `CLAUDE.md` auto-summary | ✅ (optional, any API) | ❌ (writes global memory dir) |
 | Transcript safety / recovery | ✅ seconds-level + rotation + git | partial |
 | Works in Chinese | ✅ | ✅ |
 | Privacy | Local-first; Layer 2 sends only to the endpoint you configure | local |
@@ -67,7 +67,7 @@ The three memory functions are deliberately non-overlapping: Claude Code's built
 | 🔎 Decision attribution | "Why X" → decision timeline + reason chain + status + impact |
 | 💾 Save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
 | 🔁 Auto-backup (hooks) | Layer 1: transcript snapshot + backup/commit (silent, zero deps) |
-| 🔁 Fresh-keeping (API) | Layer 2: conversation auto-extracted into CLAUDE.md (optional) |
+| 🔁 Auto-summary (API) | Layer 2: conversation auto-extracted into CLAUDE.md (optional) |
 | 🔍 MD health check | Batch-verify `CLAUDE.md` + `.git` exist for every registered project |
 | ↩️ Version rollback | CLAUDE.md / project files / registry — diff confirm + new commit |
 | 🛡️ Backup rotation | PROJECTS.json / CLAUDE.md / SKILL.md backups, keep latest 10 each |
@@ -140,7 +140,7 @@ Projects live under a configurable root — the default is `~/projects/`; you ca
 
 ## Auto-backup (hooks, silent)
 
-Two layers, fully silent, run only inside `~/projects/` project directories:
+Two layers, fully silent, run only inside the projects root (default `~/projects/`, configurable):
 
 **Layer 1 - Mechanical snapshot (zero dependencies, on by default)**
 
@@ -179,9 +179,9 @@ Two layers, fully silent, run only inside `~/projects/` project directories:
 
 On first use the skill will ask whether you want to enable auto-backup — it explains exactly what gets authorized (hooks in your `settings.json`, local-only, nothing leaves your machine) and what you get (nothing is ever lost). Skippable, asked once.
 
-**Layer 2 - Fresh-keeping (optional, bring your own key)**
+**Layer 2 - Auto-summary (optional, bring your own key)**
 
-Keeps CLAUDE.md fresh by extracting progress / decisions / todos / next actions from the conversation and merging them (throttled: >=10 new messages or >=10 minutes). Works with **any OpenAI-compatible API**:
+Keeps CLAUDE.md current by extracting progress / decisions / todos / next actions from the conversation and merging them (throttled: >=10 new messages or >=10 minutes). Works with **any OpenAI-compatible API**:
 
 ```bash
 # any OpenAI-compatible API works (DeepSeek / OpenAI / Qwen / local Ollama - same shape)
@@ -190,7 +190,7 @@ export PR_API_KEY=sk-your-key                                 # <-- your own key
 export PR_API_MODEL=your-model                                # <-- e.g. deepseek-v4-flash / gpt-4o-mini / qwen-plus
 ```
 
-Without a key you still get Layer 1 plus all core features; with a key you additionally get an always-fresh CLAUDE.md. Conversation is only sent to the endpoint you configure. On first use the skill asks whether you want to configure a key (skippable, asked once).
+Without a key you still get Layer 1 plus all core features; with a key you additionally get an always-current CLAUDE.md. Conversation is only sent to the endpoint you configure. On first use the skill asks whether you want to configure a key (skippable, asked once).
 
 **Portability - can I use this outside Claude Code?**
 
