@@ -52,6 +52,7 @@ The two memory functions are deliberately non-overlapping: Claude Code's built-i
 | Project health check (batch audit CLAUDE.md/.git) | ✅ | ❌ |
 | Version rollback (CLAUDE.md / files / registry) | ✅ | ❌ |
 | Transcript safety / recovery | ✅ seconds-level + rotation + git | partial |
+| Unrecorded-work recovery | ✅ transcript history + save-time fallback (saved_at) | ❌ |
 | Works in Chinese | ✅ | ✅ |
 | Privacy | Local-first, nothing leaves your machine | local |
 

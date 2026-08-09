@@ -107,8 +107,22 @@ def git_commit(project_dir: Path):
                 ["git", "-C", str(project_dir), "add", "-u"],
                 capture_output=True, timeout=10,
             )
+        # commit message 动态化（2026-08-09 已知问题修复）：按实际暂存文件生成
+        stat = subprocess.run(
+            ["git", "-C", str(project_dir), "diff", "--cached", "--stat"],
+            capture_output=True, text=True, timeout=10,
+        )
+        msg = "自动备份：会话结束归档"
+        if stat.stdout.strip():
+            files = [
+                l.strip().split("|")[0].strip()
+                for l in stat.stdout.strip().splitlines()
+                if "|" in l and "files changed" not in l
+            ]
+            if files:
+                msg += f"（{', '.join(files[:3])}）"
         subprocess.run(
-            ["git", "-C", str(project_dir), "commit", "-m", "自动备份：会话结束归档（CLAUDE.md 变更）"],
+            ["git", "-C", str(project_dir), "commit", "-m", msg],
             capture_output=True, timeout=10,
         )
     except (subprocess.TimeoutExpired, OSError):
