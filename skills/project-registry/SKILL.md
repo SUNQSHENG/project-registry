@@ -328,7 +328,7 @@ CLAUDE.md 初始模板见底部。
 
 | Hook | 动作 |
 |:---|:---|
-| Stop（每次响应后） | transcript 同步到 `<项目>/.memory/transcript-latest.jsonl`（秒级） |
+| Stop（每次响应后） | transcript 存档到 `<项目>/.memory/transcripts/`（秒级，按会话幂等） |
 | SessionEnd（会话结束） | CLAUDE.md 备份（10 份轮转）+ git 提交（有变更才提交） |
 
 - ⚠️ **隐私**：`.memory/` 含对话原文——**必须 gitignore 排除**（新建项目自动生成 .gitignore 含 `.memory/`），绝不进仓库
