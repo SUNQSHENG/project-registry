@@ -3,6 +3,9 @@ PROJECTS.json
 backups/
 *.bak
 
+# 开发记录（面向 AI，含内部决策，不进入公开仓库；本地保留照常生效）
+CLAUDE.md
+
 # 系统/编辑器
 .DS_Store
 Thumbs.db

@@ -66,10 +66,23 @@ def git_commit(project_dir: Path):
         )
         if r.returncode != 0 or not r.stdout.strip():
             return
-        subprocess.run(
-            ["git", "-C", str(project_dir), "add", "CLAUDE.md", ".gitignore"],
+        # CLAUDE.md 被跟踪（普通项目）→ add CLAUDE.md + .gitignore
+        # CLAUDE.md 未跟踪（发布仓库项目，如 project-registry 开发仓库）→ add -u（仅已跟踪文件，
+        #   .memory/PROJECTS.json/backups 仍被 .gitignore 排除；防 CLAUDE.md 泄入公开仓库）
+        ls = subprocess.run(
+            ["git", "-C", str(project_dir), "ls-files", "--error-unmatch", "CLAUDE.md"],
             capture_output=True, timeout=10,
         )
+        if ls.returncode == 0:
+            subprocess.run(
+                ["git", "-C", str(project_dir), "add", "CLAUDE.md", ".gitignore"],
+                capture_output=True, timeout=10,
+            )
+        else:
+            subprocess.run(
+                ["git", "-C", str(project_dir), "add", "-u"],
+                capture_output=True, timeout=10,
+            )
         subprocess.run(
             ["git", "-C", str(project_dir), "commit", "-m", "自动备份：会话结束收尾（CLAUDE.md 变更）"],
             capture_output=True, timeout=10,
