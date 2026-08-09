@@ -11,7 +11,7 @@
 | "我到底有哪些项目？" | **单一注册表**——所有项目登记在一个 `~/projects/PROJECTS.json`，增删改查 + 搜索 + 统计 |
 | "上次做到哪了？" | **AI 可读的开发记录**——每个项目有 `CLAUDE.md`（每次会话自动加载），记录状态、决策、待办和**按优先级的下一步行动** |
 | "当初为什么选 X？" | **决策归因**——"为什么 X" 返回决策时间线（原因 + 影响） |
-| "我忘了保存" | **自动备份 hooks**——每次响应后 transcript 秒级快照，退出时备份 + 提交（层 1，零依赖） |
+| "我忘了保存" | **自动备份 hooks**——每次响应后 transcript 秒级快照，退出时备份 + 提交（零依赖） |
 | "上次说了什么？" | **transcript 历史**——每个会话的对话原文存档在项目内，未收录的工作随时可恢复 |
 | "我改坏了东西" | **版本回滚**——CLAUDE.md / 项目文件 / 注册表差异确认后恢复 |
 
@@ -30,15 +30,15 @@
 |:---|:---|:---|
 | **原生加载** | Claude Code 在项目目录开会话时自动加载 `CLAUDE.md` | 深度——发生了什么、下一步做什么 |
 | **注册表** | `PROJECTS.json`，*你*开口时访问（查看/打开/搜索/统计） | 身份——有哪些项目、各是什么状态 |
-| **层 1（默认）** | `Stop` hook → transcript 快照 · `SessionEnd` hook → 备份轮转 + git 提交 | 安全——强杀终端也不丢 |
+| **自动备份（默认）** | `Stop` hook → transcript 快照 · `SessionEnd` hook → 备份轮转 + git 提交 | 安全——强杀终端也不丢 |
 | **transcript 历史** | `Stop` hook 按会话存档到 `<项目>/.memory/transcripts/`（幂等） | 备份——对话原文跨会话保留 |
 | **手动保存** | "保存项目"/"退出"强制全面更新 CLAUDE.md | 质量——深思熟虑、有据可查的记录 |
 
-两种记忆职责刻意不重叠：Claude Code 内置 auto-memory 管 *Claude 的*跨会话记忆，层 1 保证 *你的项目数据什么都不丢*（保存时 CLAUDE.md，每次响应 transcript 原文）。
+两种记忆职责刻意不重叠：Claude Code 内置 auto-memory 管 *Claude 的*跨会话记忆，自动备份保证 *你的项目数据什么都不丢*（保存时 CLAUDE.md，每次响应 transcript 原文）。
 
-**手动保存是最终记录。** 保存/退出时强制全面更新 CLAUDE.md：补录决策（含 WHY）、按优先级重排下一步行动。最终版本永远是你手动保存的那份。
+**手动保存是最终记录。** 保存/退出时强制全面更新 CLAUDE.md：补录决策（含 WHY）、按优先级重排下一步行动。
 
-**怎么手动保存？** 在对话中直接对 agent 说「保存」或「退出」即可——**没有按钮、没有命令**，就是这么一句话。随时可以说，不依赖层 1 是否启用。
+**怎么手动保存？** 在对话中直接对 agent 说「保存」或「退出」即可——**没有按钮、没有命令**，就是这么一句话。随时可以说，不依赖自动备份是否启用。
 
 ## 与其他方案对比
 
@@ -142,7 +142,7 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 机制全部后台静默，只在**项目根**（默认 `~/projects/`，可自定义）项目目录生效：
 
-**层 1 机械快照（零依赖，默认开启）**
+**自动备份 - 机械快照（零依赖，默认开启）**
 
 | Hook | 动作 |
 |:---|:---|
@@ -151,7 +151,7 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 `.memory/` 含对话原文——已 gitignore，绝不进仓库。强杀终端也不丢数据。
 
-**启用层 1**（一次性配置，把 hooks 加入 `~/.claude/settings.json`）：
+**启用自动备份**（一次性配置，把 hooks 加入 `~/.claude/settings.json`）：
 
 ```json
 {
@@ -182,11 +182,11 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 每个会话的对话原文存档到 `<项目>/.memory/transcripts/`——将最近存档与上次保存时刻对比，可恢复未收录的工作。
 
-零配置即用：层 1 数据安全 + 全部核心功能。
+零配置即用：自动备份数据安全 + 全部核心功能。
 
 **可移植性 —— 能在 Claude 之外用吗？**
 
-核心工作流（注册表、新建项目、会话恢复、CLAUDE.md 保存、决策归因、回滚）就是指令 + JSON + git，可以移植到其他 AI agent（Codex / Gemini CLI / Cursor 等 AGENTS.md 类体系），把 SKILL.md 的指令按其格式重述即可。**Claude Code 专属的部分**：自动备份（层 1）——依赖 Claude 的 transcript 文件与 Stop/SessionEnd hooks，因此自动备份仅限 Claude。核心功能不依赖它，照样完整可用。
+核心工作流（注册表、新建项目、会话恢复、CLAUDE.md 保存、决策归因、回滚）就是指令 + JSON + git，可以移植到其他 AI agent（Codex / Gemini CLI / Cursor 等 AGENTS.md 类体系），把 SKILL.md 的指令按其格式重述即可。**Claude Code 专属的部分**：自动备份——依赖 Claude 的 transcript 文件与 Stop/SessionEnd hooks，因此自动备份仅限 Claude。核心功能不依赖它，照样完整可用。
 
 ## 示例注册表
 
