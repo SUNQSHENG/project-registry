@@ -187,6 +187,10 @@ export PR_API_MODEL=你的模型名                      # <-- 如 deepseek-v4-f
 
 不配 key：层 1 数据安全 + 全部核心功能；配 key：额外获得 CLAUDE.md 实时保鲜。对话只发送到你配置的端点。首次使用会询问是否配置（可跳过，只问一次）。
 
+**可移植性 —— 能在 Claude 之外用吗？**
+
+核心工作流（注册表、会话恢复、手动保存、决策归因、回滚）就是指令 + JSON + git，可以移植到其他 AI agent（Codex / Gemini CLI / Cursor 等 AGENTS.md 类体系），把 SKILL.md 的指令按其格式重述即可。**Claude Code 专属的部分**：自动备份两层（层1/层2）——依赖 Claude 的 transcript 文件与 Stop/SessionEnd hooks，因此自动备份仅限 Claude。核心功能不依赖它，照样完整可用。
+
 ## 示例注册表
 
 见 [examples/PROJECTS.example.json](examples/PROJECTS.example.json)（虚构数据示例）。

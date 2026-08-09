@@ -189,6 +189,10 @@ export PR_API_MODEL=your-model                                # <-- e.g. deepsee
 
 Without a key you still get Layer 1 plus all core features; with a key you additionally get an always-fresh CLAUDE.md. Conversation is only sent to the endpoint you configure. On first use the skill asks whether you want to configure a key (skippable, asked once).
 
+**Portability - can I use this outside Claude Code?**
+
+The core workflow (registry, session resume, manual save, decision attribution, rollback) is plain instructions + JSON + git, so you can port it to other AI agents (Codex / Gemini CLI / Cursor and other AGENTS.md-style setups) by re-stating the SKILL.md commands in their format. What stays **Claude Code-specific**: the auto-backup layers (1 & 2) - they depend on Claude's transcript files and Stop/SessionEnd hooks, so auto-backup is Claude-only. All core features work without it.
+
 ## Example registry
 
 See [examples/PROJECTS.example.json](examples/PROJECTS.example.json) for a sample registry with fictional projects.
