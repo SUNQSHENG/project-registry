@@ -65,8 +65,8 @@ The two memory functions are deliberately non-overlapping: Claude Code's built-i
 | 📜 Decision discipline | Every decision records WHY (mandatory) — traceable months later |
 | 🔎 Decision attribution | "Why X" → decision timeline + reason chain + status + impact |
 | 💾 Save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
-| 🔁 Auto-backup (hooks) | transcript archive + backup/commit (silent, zero deps) |
-| 🗂️ Transcript history | Per-session raw conversation archived (silent, zero deps) |
+| 🔁 Auto-backup (hooks) | transcript archived per-session + backup/commit (silent, zero deps) |
+| 🗂️ Unrecorded-work recovery | save-time fallback (saved_at): unrecorded conversation is read back on session resume |
 | 🔍 MD health check | Batch-verify `CLAUDE.md` + `.git` exist for every registered project |
 | ↩️ Version rollback | CLAUDE.md / project files / registry — diff confirm + new commit |
 | 🛡️ Backup rotation | PROJECTS.json / CLAUDE.md / SKILL.md backups, keep latest 10 each |
