@@ -38,7 +38,7 @@ Your project lives in ~/projects/<key>/
 
 The three memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, Layer 2 keeps *your project's document* fresh, and Layer 1 guarantees *nothing is ever lost*.
 
-**Fresh-keeping ≠ manual save.** Layer 2 auto-fresh is *incremental* — a real-time draft that keeps CLAUDE.md current between saves. **It cannot replace manual save.** Saving or exiting forces a full review: decisions get recorded with their WHY, next actions get re-prioritized. Auto-fresh keeps the record *fresh*; manual save keeps it *right*. The authoritative version is always the one you save manually.
+**Fresh-keeping ≠ manual save.** Layer 2 auto-fresh is *incremental* — a real-time draft that keeps CLAUDE.md current between saves. **It cannot replace manual save.** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized. Auto-fresh keeps the record *fresh*; manual save keeps it *right*. The authoritative version is always the one you save manually.
 
 **How do I manually save?** Just tell the agent **"save"** or **"exit"** in the conversation — there's no button and no command, that's it. You can say it anytime; it works regardless of whether Layer 1/2 are enabled.
 
@@ -118,7 +118,7 @@ Restart Claude Code. Then type "list projects" — or simply use `/project-regis
    - type a number (1-99) → open that project (session resume kicks in)
    - N → new project     D → delete project     C → health check
 3. Work in the project. Auto-backup keeps data safe silently — but manual save is still required for the authoritative record
-4. When done: "save project" or "exit" (forces a full CLAUDE.md review)
+4. When done: "save project" or "exit" (forces a full CLAUDE.md update)
 5. Later: "why X" → decision attribution · "rollback" → restore a version · "check projects" → health check
 ```
 
