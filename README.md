@@ -61,6 +61,7 @@ The three memory functions are deliberately non-overlapping: Claude Code's built
 | Feature | What it does |
 |:---|:---|
 | 📋 Project registry | CRUD + search + stats over `~/projects/PROJECTS.json` |
+| 🆕 New project | One-command scaffold: key + directory + README/CLAUDE.md + .gitignore + git init + registry entry |
 | 🧭 Session resume | Entering a project → recall last progress → confirm what to continue |
 | 📜 Decision discipline | Every decision records WHY (mandatory) — traceable months later |
 | 🔎 Decision attribution | "Why X" → decision timeline + reason chain + status + impact |
