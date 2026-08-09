@@ -130,6 +130,7 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
    - `saved_at` 缺失（旧项目）→ 直接触发
    - 存在 → 最近存档（`.memory/transcripts/` 最新一份）的 mtime > `saved_at`？是 → 触发
    - **触发** → 读最近存档**尾部 30 条**做快览并入摘要；未入账量大（>30 条或多份存档）→ **弹 AskUserQuestion 卡片**：完整读 / 读尾部 / 跳过（成本用户决策）
+   - ⚠️ **串扰分辨**：存档为整个会话（跨项目时会含其他项目对话）——读取时**分辨内容归属**，只提取当前项目相关内容并入摘要，其他项目内容忽略
    - **不触发** → 只读 CLAUDE.md（常态，零额外成本）
 
 示例话术：
