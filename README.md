@@ -13,7 +13,7 @@ Personal developers juggle several projects at once — work, side projects, lea
 | "Which projects do I even have?" | **One registry** — every project in a single `~/projects/PROJECTS.json`, with CRUD, search and stats |
 | "What did I do last time?" | **AI-readable logs** — each project has a `CLAUDE.md` (auto-loaded every session) with status, decisions, todos and **prioritized next actions** |
 | "Why did I choose X?" | **Decision attribution** — "why X" returns the decision timeline with reasons and impact |
-| "I forgot to save" | **Auto-backup hooks** — transcript archived every response, backup + commit on exit (zero dependencies) |
+| "I forgot to save" | **Context context auto-backup hooks** — transcript archived every response, backup + commit on exit (zero dependencies) |
 | "What did I say last time?" | **Transcript history** — every session's raw conversation is archived in the project, so unrecorded work is always recoverable |
 | "I broke something" | **Rollback** — diff-confirmed version restore for CLAUDE.md, files and the registry |
 
@@ -32,12 +32,12 @@ Your project lives in ~/projects/<key>/
 |:---|:---|:---|
 | **Native loading** | Claude Code auto-loads `CLAUDE.md` when a session starts in the project dir | Depth — what happened, what's next |
 | **Registry** | `PROJECTS.json`, accessed when *you* ask (list / open / search / stats) | Identity — which projects exist, their state |
-| **Auto-backup (default)** | `Stop` hook → transcript archived per-session into `<project>/.memory/transcripts/` (idempotent) · `SessionEnd` hook → backup rotation + git commit | Safety — survives even a killed terminal; raw conversation kept across sessions |
+| **Context context auto-backup (default)** | `Stop` hook → transcript archived per-session into `<project>/.memory/transcripts/` (idempotent) · `SessionEnd` hook → backup rotation + git commit | Safety — survives even a killed terminal; raw conversation kept across sessions |
 | **Manual save** | "save project" / "exit" forces a full CLAUDE.md update | Quality — a considered, attributed record |
 
-The two memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, and auto-backup guarantees *the raw conversation is never lost* (archived every response, safe even if the terminal is killed). The organized CLAUDE.md record, however, requires manual save.
+The two memory functions are deliberately non-overlapping: Claude Code's built-in auto-memory keeps *Claude's* cross-session memory, and context auto-backup guarantees *the raw conversation is never lost* (archived every response, safe even if the terminal is killed). The organized CLAUDE.md record, however, requires manual save.
 
-**Manual save produces the final record (CLAUDE.md).** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized. How to do it: just tell the agent **"save"** or **"exit"** in the conversation — no button, no command, that's it. You can say it anytime — it works regardless of whether the auto-backup hooks (raw-conversation archiving configured in `settings.json`) are enabled.
+**Manual save produces the final record (CLAUDE.md).** Saving or exiting forces a full CLAUDE.md update: decisions get recorded with their WHY, next actions get re-prioritized. How to do it: just tell the agent **"save"** or **"exit"** in the conversation — no button, no command, that's it. You can say it anytime — it works regardless of whether the context auto-backup hooks (raw-conversation archiving configured in `settings.json`) are enabled.
 
 ## Compared to alternatives
 
@@ -63,7 +63,7 @@ The two memory functions are deliberately non-overlapping: Claude Code's built-i
 | 📜 Decision discipline | Every decision records WHY (mandatory) — traceable months later |
 | 🔎 Decision attribution | "Why X" → decision timeline + reason chain + status + impact |
 | 💾 Save on exit | Save/exit **forces** CLAUDE.md update with prioritized next actions |
-| 🔁 Auto-backup (hooks) | transcript archived per-session + backup/commit (silent, zero deps) |
+| 🔁 Context context auto-backup (hooks) | transcript archived per-session + backup/commit (silent, zero deps) |
 | 🗂️ Unrecorded-work recovery | save-time fallback (saved_at): unrecorded conversation is read back on session resume |
 | 🔍 MD health check | Batch-verify `CLAUDE.md` + `.git` exist for every registered project |
 | ↩️ Version rollback | CLAUDE.md / project files / registry — diff confirm + new commit |
@@ -83,7 +83,7 @@ npx @sunqsheng/project-registry
 npm i -g @sunqsheng/project-registry && project-registry
 ```
 
-Copies the skill and configures auto-backup hooks with an authorization prompt. Idempotent; remove with `project-registry --remove`.
+Copies the skill and configures context auto-backup hooks with an authorization prompt. Idempotent; remove with `project-registry --remove`.
 
 ### Option 2: npx skills
 
@@ -116,7 +116,7 @@ Restart Claude Code. Then type "list projects" — or simply use `/project-regis
 2. Menu shows all projects with numbers:
    - type a number (1-99) → open that project (session resume kicks in)
    - N → new project     D → delete project     C → health check
-3. Work in the project. Auto-backup keeps data safe silently — but manual save is still required for the full CLAUDE.md update
+3. Work in the project. Context context auto-backup keeps data safe silently — but manual save is still required for the full CLAUDE.md update
 4. When done: "save project" or "exit" (forces a full CLAUDE.md update)
 5. Later: "why X" → decision attribution · "rollback" → restore a version · "check projects" → health check
 ```
@@ -129,7 +129,7 @@ New project structure:
   <project-key>/
     README.md              # for humans: background & scope
     CLAUDE.md              # for AI: status, decisions, todos, next actions
-    .memory/               # auto-backup transcripts (gitignored, never committed)
+    .memory/               # context auto-backup transcripts (gitignored, never committed)
     .git/                  # git init automatically (CLAUDE.md must be at .git level)
 ```
 
@@ -137,20 +137,20 @@ Projects live under a configurable root — the default is `~/projects/`; you ca
 
 `CLAUDE.md` is the heart of it — Claude Code auto-loads it every session, so long-running projects never lose context.
 
-## Auto-backup (hooks, silent)
+## Context context auto-backup (hooks, silent)
 
 Two layers, fully silent, run only inside the projects root (default `~/projects/`, configurable):
 
-**Auto-backup (zero dependencies, on by default)**
+**Context context auto-backup (zero dependencies, on by default)**
 
 | Hook | Action |
 |:---|:---|
 | `Stop` (after every response) | Archive transcript per-session into `<project>/.memory/transcripts/` (second-level, idempotent) |
 | `SessionEnd` | Backup CLAUDE.md (rotation of 10) + git commit |
 
-`.memory/` contains raw conversation - it is **gitignored** and never committed. Auto-backup keeps data safe even if you kill the terminal: nothing is ever lost.
+`.memory/` contains raw conversation - it is **gitignored** and never committed. Context context auto-backup keeps data safe even if you kill the terminal: nothing is ever lost.
 
-**Enable auto-backup** (one-time, add hooks to `~/.claude/settings.json`):
+**Enable context auto-backup** (one-time, add hooks to `~/.claude/settings.json`):
 
 ```json
 {
@@ -175,15 +175,15 @@ Two layers, fully silent, run only inside the projects root (default `~/projects
 }
 ```
 
-On first use the skill will ask whether you want to enable auto-backup — it explains exactly what gets authorized (hooks in your `settings.json`, local-only, nothing leaves your machine) and what you get (nothing is ever lost). Skippable, asked once.
+On first use the skill will ask whether you want to enable context auto-backup — it explains exactly what gets authorized (hooks in your `settings.json`, local-only, nothing leaves your machine) and what you get (nothing is ever lost). Skippable, asked once.
 
 **Unrecorded-work recovery (save-time fallback)**
 
-Saving a project records the save moment (saved_at); when you open a project and the latest archived conversation (the `.memory/transcripts/` files written by auto-backup) is newer than the save moment, the session resume reads the tail of the conversation — **unrecorded work is never silently lost** (it asks before reading large volumes). Zero configuration; auto-backup keeps data safe and all core features work out of the box.
+Saving a project records the save moment (saved_at); when you open a project and the latest archived conversation (the `.memory/transcripts/` files written by context auto-backup) is newer than the save moment, the session resume reads the tail of the conversation — **unrecorded work is never silently lost** (it asks before reading large volumes). Zero configuration; context auto-backup keeps data safe and all core features work out of the box.
 
 **Portability - can I use this outside Claude Code?**
 
-The core workflow (registry, new project, session resume, CLAUDE.md save, decision attribution, rollback) is plain instructions + JSON + git, so you can port it to other AI agents (Codex / Gemini CLI / Cursor and other AGENTS.md-style setups) by re-stating the SKILL.md commands in their format. What stays **Claude Code-specific**: the auto-backup layers (1 & 2) - they depend on Claude's transcript files and Stop/SessionEnd hooks, so auto-backup is Claude-only. All core features work without it.
+The core workflow (registry, new project, session resume, CLAUDE.md save, decision attribution, rollback) is plain instructions + JSON + git, so you can port it to other AI agents (Codex / Gemini CLI / Cursor and other AGENTS.md-style setups) by re-stating the SKILL.md commands in their format. What stays **Claude Code-specific**: the context context auto-backup hooks - they depend on Claude's transcript files and Stop/SessionEnd hooks, so context context auto-backup is Claude-only. All core features work without it.
 
 ## Example registry
 
@@ -192,7 +192,7 @@ See [examples/PROJECTS.example.json](examples/PROJECTS.example.json) for a sampl
 ## Development
 
 - `skills/project-registry/SKILL.md` — the skill itself (self-contained, no dependencies)
-- `skills/project-registry/scripts/` — auto-backup hooks (transcript-sync / session-end)
+- `skills/project-registry/scripts/` — context auto-backup hooks (transcript-sync / session-end)
 - Design decisions: [docs/adr/](docs/adr/)
 
 ## License
