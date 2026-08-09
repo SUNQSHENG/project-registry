@@ -179,7 +179,7 @@ On first use the skill will ask whether you want to enable context auto-backup �
 
 **Unrecorded-work recovery (save-time fallback)**
 
-Saving a project records the save moment (saved_at); when you open a project and the latest archived conversation (the `.memory/transcripts/` files written by context auto-backup) is newer than the save moment, the session resume reads the tail of the conversation — **unrecorded work is never silently lost** (it asks before reading large volumes). Zero configuration; context auto-backup keeps data safe and all core features work out of the box.
+Saving a project records the save moment (saved_at, recalibrated when the save flow finishes); when you open a project, the session resume checks whether the archived conversation (the `.memory/transcripts/` files written by context auto-backup) contains **real conversation produced after the save moment** — if so it reads the tail of the conversation, so **unrecorded work is never silently lost** (it asks before reading large volumes; cross-project sessions are attributed automatically — other projects' conversations don't trigger this project's check). Zero configuration; context auto-backup keeps data safe and all core features work out of the box.
 
 **Portability - can I use this outside Claude Code?**
 
