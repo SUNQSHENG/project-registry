@@ -1,6 +1,6 @@
 {
   "name": "@sunqsheng/project-registry",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "One-command installer for the project-registry Claude Code skill — multi-project management, session resume, data you can never lose.",
   "license": "MIT",
   "bin": {
