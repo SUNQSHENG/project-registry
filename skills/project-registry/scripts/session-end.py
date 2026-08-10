@@ -49,6 +49,51 @@ def is_project_dir(cwd: str) -> Path | None:
     return root / rel.parts[0]
 
 
+def encode_path(p: Path) -> str:
+    """项目目录 → transcript 目录编码名（: \\ / 全转 -，与 Claude Code 官方编码一致）"""
+    return str(p.resolve()).replace(":", "-").replace("\\", "-").replace("/", "-")
+
+
+def read_stdin_json() -> dict | None:
+    """读 hook stdin JSON；手动运行（TTY）或空输入返回 None，不阻塞"""
+    try:
+        if sys.stdin is None or sys.stdin.isatty():
+            return None
+        data = sys.stdin.read()
+        if not data.strip():
+            return None
+        return json.loads(data)
+    except Exception:
+        return None
+
+
+def resolve_project_dir(stdin: dict | None) -> Path | None:
+    """定位当前项目：
+    - hook 调用（stdin 有 JSON）：① stdin transcript_path 反推（与进程 cwd 无关，
+      CLI/IDE 扩展通吃，修复 hook 进程 cwd 漂移/不持久问题）② stdin cwd 字段。
+      两者都失配 → 明确返回 None（stdin cwd 与进程 cwd 同源，回退无增益只会假命中）
+    - 手动运行（无 stdin）：进程 os.getcwd()"""
+    if stdin:
+        tp = stdin.get("transcript_path")
+        if tp:
+            # ~/.claude/projects/<编码路径>/<会话>.jsonl → 用项目清单编码名匹配反推
+            parent = Path(tp).resolve().parent
+            if parent.name:
+                try:
+                    for d in PROJECTS_ROOT.iterdir():
+                        if d.is_dir() and encode_path(d) == parent.name:
+                            return d
+                except OSError:
+                    pass
+        cwd = stdin.get("cwd")
+        if cwd:
+            p = is_project_dir(cwd)
+            if p:
+                return p
+        return None
+    return is_project_dir(os.getcwd())
+
+
 def backup_rotate(project_dir: Path):
     """备份 CLAUDE.md 并按末尾时间戳轮转（保留最近 10 份）"""
     md = project_dir / "CLAUDE.md"
@@ -130,7 +175,8 @@ def git_commit(project_dir: Path):
 
 
 def main() -> int:
-    project_dir = is_project_dir(os.getcwd())
+    stdin = read_stdin_json()
+    project_dir = resolve_project_dir(stdin)
     if project_dir is None:
         return 0
     backup_rotate(project_dir)

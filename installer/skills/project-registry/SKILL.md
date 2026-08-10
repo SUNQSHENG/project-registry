@@ -290,7 +290,7 @@ CLAUDE.md 初始模板见底部。
 
 打开项目后**持续保持 cwd 在项目根目录**；临时读外部文件优先用**绝对路径**；确需 cd 离开时，读完**立即切回项目根**。任何跨目录操作结束时，`pwd` 确认在项目根。
 
-> **原理**：层 1 两个 hooks 脚本（transcript-sync.py / session-end.py）全部基于 `os.getcwd()` 定位当前项目（`is_project_dir()` 逻辑）——cwd 在 `<项目根>/<key>/`（默认 `~/projects/`）下才操作该项目，否则**跳过**。cwd 漂移会导致：transcript 同步/历史存档写到错误项目，或全部跳过；会话结束归档（备份+git 提交）漏掉当前项目。
+> **原理**：层 1 两个 hooks 脚本（transcript-sync.py / session-end.py）定位项目**不依赖进程 cwd**（v1.2.4 起）——hook stdin 的 `transcript_path`（`~/.claude/projects/<编码路径>/<会话>.jsonl`）含项目目录编码，脚本按项目清单编码名反推并校验目录存在，CLI / IDE 扩展（VSCode 等）通吃；stdin `cwd` 字段为二级 fallback；仅手动运行（无 stdin）时才用 `os.getcwd()`。cwd 纪律保留为**操作习惯**：避免单条命令 cd 混乱、保持上下文聚焦，但不再是备份生效的唯一决定因素。
 
 ## 安全机制
 
@@ -334,6 +334,8 @@ CLAUDE.md 初始模板见底部。
 | Stop（每次响应后） | transcript 存档到 `<项目>/.memory/transcripts/`（秒级，按会话幂等） |
 | SessionEnd（会话结束） | CLAUDE.md 备份（10 份轮转）+ git 提交（有变更才提交） |
 
+- 定位方式：hook stdin `transcript_path` 反推项目目录（不依赖进程 cwd，CLI/IDE 扩展通吃，见「📌 cwd 纪律」原理）
+- ⚠️ **已知限制（IDE 扩展）**：VSCode 扩展下 Stop hook 存在官方已知 bug 可能不触发（anthropics/claude-code#49851，随 Claude Code 版本修复）——该环境下自动备份可能暂停；CLI 环境不受影响
 - ⚠️ **隐私**：`.memory/` 含对话原文——**必须 gitignore 排除**（新建项目自动生成 .gitignore 含 `.memory/`），绝不进仓库
 - 强杀终端时 SessionEnd 不触发，但 Stop 的秒级同步仍在——数据不丢
 

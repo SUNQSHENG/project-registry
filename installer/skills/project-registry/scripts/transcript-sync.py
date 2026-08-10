@@ -48,13 +48,58 @@ def is_project_dir(cwd: str) -> Path | None:
     return root / rel.parts[0]
 
 
+def encode_path(p: Path) -> str:
+    """项目目录 → transcript 目录编码名（: \\ / 全转 -，与 Claude Code 官方编码一致）"""
+    return str(p.resolve()).replace(":", "-").replace("\\", "-").replace("/", "-")
+
+
+def read_stdin_json() -> dict | None:
+    """读 hook stdin JSON；手动运行（TTY）或空输入返回 None，不阻塞"""
+    try:
+        if sys.stdin is None or sys.stdin.isatty():
+            return None
+        data = sys.stdin.read()
+        if not data.strip():
+            return None
+        return json.loads(data)
+    except Exception:
+        return None
+
+
+def resolve_project_dir(stdin: dict | None) -> Path | None:
+    """定位当前项目：
+    - hook 调用（stdin 有 JSON）：① stdin transcript_path 反推（与进程 cwd 无关，
+      CLI/IDE 扩展通吃，修复 hook 进程 cwd 漂移/不持久问题）② stdin cwd 字段。
+      两者都失配 → 明确返回 None（stdin cwd 与进程 cwd 同源，回退无增益只会假命中）
+    - 手动运行（无 stdin）：进程 os.getcwd()"""
+    if stdin:
+        tp = stdin.get("transcript_path")
+        if tp:
+            # ~/.claude/projects/<编码路径>/<会话>.jsonl → 用项目清单编码名匹配反推
+            parent = Path(tp).resolve().parent
+            if parent.name:
+                try:
+                    for d in PROJECTS_ROOT.iterdir():
+                        if d.is_dir() and encode_path(d) == parent.name:
+                            return d
+                except OSError:
+                    pass
+        cwd = stdin.get("cwd")
+        if cwd:
+            p = is_project_dir(cwd)
+            if p:
+                return p
+        return None
+    return is_project_dir(os.getcwd())
+
+
 def find_transcript(project_dir: Path) -> Path | None:
     """定位当前会话 transcript：~/.claude/projects/<项目路径转义>/<最新>.jsonl"""
     projects = HOME / ".claude" / "projects"
     if not projects.is_dir():
         return None
-    # 项目目录对应的转义名：路径中的 / 和 \ 转成 -
-    cand = str(project_dir).replace("\\", "-").replace("/", "-")
+    # 项目目录对应的转义名：路径中的 : \ / 转成 -（与官方 encode 一致）
+    cand = encode_path(project_dir)
     candidates = []
     for entry in projects.iterdir():
         if not entry.is_dir():
@@ -77,8 +122,8 @@ def find_transcript(project_dir: Path) -> Path | None:
 
 
 def main() -> int:
-    cwd = os.getcwd()
-    project_dir = is_project_dir(cwd)
+    stdin = read_stdin_json()
+    project_dir = resolve_project_dir(stdin)
     if project_dir is None:
         return 0  # 非项目目录，静默跳过
 

@@ -148,6 +148,10 @@ cp -r project-registry/skills/project-registry ~/.claude/skills/
 
 `.memory/` 含对话原文——已 gitignore，绝不进仓库。强杀终端也不丢数据。
 
+项目定位方式：解码 hook stdin 的 `transcript_path`（不依赖进程 cwd），CLI 与 IDE 扩展（VSCode 等）环境通用。
+
+> **已知限制（IDE 扩展）**：VSCode 扩展下 `Stop` hook 可能不触发（上游已知 bug，anthropics/claude-code#49851）——该环境下上下文自动备份可能暂停，待官方修复；CLI 环境不受影响。
+
 **启用上下文自动备份**（一次性配置，把 hooks 加入 `~/.claude/settings.json`）：
 
 ```json

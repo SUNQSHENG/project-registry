@@ -150,6 +150,10 @@ Two layers, fully silent, run only inside the projects root (default `~/projects
 
 `.memory/` contains raw conversation - it is **gitignored** and never committed. Context context auto-backup keeps data safe even if you kill the terminal: nothing is ever lost.
 
+Project targeting works by decoding the `transcript_path` from the hook stdin (not the process cwd), so it works in the CLI **and** IDE extensions (VSCode, etc.).
+
+> **Known limitation (IDE extensions)**: the `Stop` hook may not fire in the VSCode extension due to an upstream bug (anthropics/claude-code#49851). In that environment context auto-backup may pause until Claude Code fixes it; the CLI is unaffected.
+
 **Enable context auto-backup** (one-time, add hooks to `~/.claude/settings.json`):
 
 ```json
