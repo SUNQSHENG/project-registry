@@ -8,8 +8,7 @@
  *      — after showing exactly what gets authorized and what you get
  *
  * Idempotent: re-running never duplicates hooks.
- * Local-only: nothing is sent anywhere. Layer 2 (auto-summary) only talks
- * to an endpoint YOU configure with your own API key — until then it's silent.
+ * Local-only: nothing is sent anywhere.
  *
  * Usage:
  *   npx @sunqsheng/project-registry

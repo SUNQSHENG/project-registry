@@ -73,7 +73,7 @@ def resolve_project_dir(stdin: dict | None) -> Path | None:
       CLI/IDE 扩展通吃，修复 hook 进程 cwd 漂移/不持久问题）② stdin cwd 字段。
       两者都失配 → 明确返回 None（stdin cwd 与进程 cwd 同源，回退无增益只会假命中）
     - 手动运行（无 stdin）：进程 os.getcwd()"""
-    if stdin:
+    if stdin is not None:
         tp = stdin.get("transcript_path")
         if tp:
             # ~/.claude/projects/<编码路径>/<会话>.jsonl → 用项目清单编码名匹配反推
@@ -132,7 +132,7 @@ def main() -> int:
     # （绕开 find_transcript 的编码匹配与兜底——同一项目可能有多编码转录目录，
     #   多项目并发时兜底会选错会话）
     transcript = None
-    tp = stdin.get("transcript_path") if stdin else None
+    tp = stdin.get("transcript_path") if stdin is not None else None
     if tp:
         tp_path = Path(tp)
         if tp_path.is_file():
