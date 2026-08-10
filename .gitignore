@@ -19,3 +19,7 @@ docs/make_cards.py
 # npm 安装器
 installer/node_modules/
 installer/*.tgz
+
+# Python 缓存
+__pycache__/
+*.pyc
