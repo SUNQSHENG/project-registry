@@ -7,6 +7,7 @@ project-registry · 未入账判定（会话开始流程步骤 5 单一入口）
 输出: UNREAD=0/1 + 有未入账时尾部 30 条快览（超量提示弹卡决策）
 双格式兼容：message 字段直接是 dict 对象 或 字符串化 dict；timestamp 数字或 ISO。
 """
+import ast
 import json
 import sys
 from datetime import datetime
@@ -37,9 +38,12 @@ def get_content(msg):
     m = msg.get("message")
     if isinstance(m, str):
         try:
-            m = json.loads(m)
-        except (json.JSONDecodeError, ValueError):
-            m = None
+            m = json.loads(m)  # JSON 字符串（{"role":..., "content":...}）
+        except ValueError:
+            try:
+                m = ast.literal_eval(m)  # Python repr 形态（{'role':..., 'content':...}）
+            except (ValueError, SyntaxError):
+                m = None
     if isinstance(m, dict):
         c = m.get("content")
         meta = m.get("isMeta", False)
@@ -69,8 +73,10 @@ def main() -> int:
         saved_at = json.loads(state.read_text(encoding="utf-8")).get("saved_at")
     except Exception:
         saved_at = None
-    if not saved_at:
-        print("UNREAD=1  无 saved_at（旧项目，保守触发）")
+    # 非数字 saved_at（旧版保存流程写入字符串如 "20260810_171319"）→ 视为缺失保守触发；
+    # 不校验则 `ts <= saved_at` 抛 TypeError（float vs str）整个判定崩溃
+    if not isinstance(saved_at, (int, float)):
+        print("UNREAD=1  无有效 saved_at（缺失或非数字，旧项目，保守触发）")
         return 0
 
     arch = proj / ".memory" / "transcripts"
