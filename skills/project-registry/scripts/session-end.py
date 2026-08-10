@@ -144,8 +144,12 @@ def git_commit(project_dir: Path):
             capture_output=True, timeout=10,
         )
         if ls.returncode == 0:
+            # 只 add 存在的文件：无 .gitignore 的项目（手动创建/非 skill 新建）不加
+            add_targets = ["CLAUDE.md"]
+            if (project_dir / ".gitignore").exists():
+                add_targets.append(".gitignore")
             subprocess.run(
-                ["git", "-C", str(project_dir), "add", "CLAUDE.md", ".gitignore"],
+                ["git", "-C", str(project_dir), "add", *add_targets],
                 capture_output=True, timeout=10,
             )
         else:
