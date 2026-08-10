@@ -36,8 +36,7 @@ const HOOKS = {
     {
       matcher: 'always',
       hooks: [
-        { type: 'command', command: `${PYTHON} ${path.join(SKILL_DEST, 'scripts', 'transcript-sync.py').replace(/\\/g, '/')}` },
-        { type: 'command', command: `${PYTHON} ${path.join(SKILL_DEST, 'scripts', 'auto-summary.py').replace(/\\/g, '/')}` }
+        { type: 'command', command: `${PYTHON} ${path.join(SKILL_DEST, 'scripts', 'transcript-sync.py').replace(/\\/g, '/')}` }
       ]
     }
   ],
@@ -58,20 +57,18 @@ const BANNER = `
 
 const AUTHORIZE_TEXT = `
 ⚠️  WHAT THIS AUTHORIZES
-   Adds 3 hooks (Stop x2 + SessionEnd) to your ~/.claude/settings.json
+   Adds 2 hooks (Stop + SessionEnd) to your ~/.claude/settings.json
    They run only inside ~/projects/ project directories.
    100% local and silent — nothing is ever sent anywhere.
-   (Layer 2 auto-summary is optional and needs YOUR API key; until you
-   set one, it stays completely silent.)
 
 ✅  WHAT YOU GET
-   · Second-level transcript snapshots — kill the terminal, lose nothing
+   · Second-level transcript archives — kill the terminal, lose nothing
    · Auto backup (10 rotated) + git commit on session end
    · Session resume with full project context
-   · You never need to "remember to save"
+   · Unrecorded work recovery — conversation after the last save is never silently lost
 
    (The hooks are easy to remove: delete the "hooks" block the installer
-   adds, or run this installer and choose "remove".)
+   adds, or run this installer with "--remove".)
 `;
 
 function ask(question) {
@@ -84,11 +81,15 @@ function ask(question) {
   });
 }
 
-function copySkill() {
+function copySkill(force) {
   if (fs.existsSync(SKILL_DEST)) {
-    console.log(`· skill already exists at ${SKILL_DEST}`);
-    console.log('  → keeping it (re-run with --force to overwrite)');
-    return false;
+    if (force) {
+      fs.rmSync(SKILL_DEST, { recursive: true, force: true });
+    } else {
+      console.log(`· skill already exists at ${SKILL_DEST}`);
+      console.log('  → keeping it (re-run with --force to overwrite)');
+      return false;
+    }
   }
   fs.mkdirSync(path.dirname(SKILL_DEST), { recursive: true });
   fs.cpSync(SRC_DIR, SKILL_DEST, {
@@ -145,11 +146,15 @@ function removeHooks(settings) {
 
 function writeSettings(settings) {
   if (fs.existsSync(SETTINGS_PATH)) {
-    fs.copyFileSync(SETTINGS_PATH, SETTINGS_PATH + '.pre-project-registry.bak');
+    // 带时间戳备份：重复运行不覆盖旧备份
+    const ts = new Date().toISOString().replace(/[:.]/g, '-');
+    const bak = `${SETTINGS_PATH}.pre-project-registry.${ts}.bak`;
+    fs.copyFileSync(SETTINGS_PATH, bak);
+    console.log(`· backup saved → ${bak}`);
   }
   fs.mkdirSync(path.dirname(SETTINGS_PATH), { recursive: true });
   fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
-  console.log(`✓ hooks configured → ${SETTINGS_PATH} (backup saved as .pre-project-registry.bak)`);
+  console.log(`✓ hooks configured → ${SETTINGS_PATH}`);
 }
 
 async function main() {
@@ -178,10 +183,7 @@ async function main() {
     return;
   }
 
-  copySkill();
-  if (!force && fs.existsSync(SKILL_DEST)) {
-    // skill kept; hooks may still be missing — continue to hook setup
-  }
+  copySkill(force);
 
   const { settings, existed } = loadSettings();
   if (hasOurHooks(settings)) {
