@@ -1,0 +1,78 @@
+name: 🐛 Bug report
+description: Report a bug in project-registry — something broken, crashing, or silently not working
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Before posting, check the [README troubleshooting notes](https://github.com/SUNQSHENG/project-registry#readme) — some known issues (e.g. VSCode Stop-hook not firing) are documented there.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the symptom. If something *silently* failed (e.g. backups or commits stopped), say so explicitly — silent failures are the most dangerous.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Install via `npx skills add SUNQSHENG/project-registry` (or `/plugin install ...`)
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output
+      description: Hook stderr output, git output, or console messages. Run the hook manually if you can — `python ~/.claude/skills/project-registry/scripts/session-end.py` from inside a project dir.
+      render: shell
+
+  - type: input
+    id: install-method
+    attributes:
+      label: Install method
+      description: npx skills add / plugin marketplace / manual copy
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Check your installed SKILL.md or npm package version (e.g. 1.2.5)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Windows (CLI)
+        - Windows (VSCode extension)
+        - macOS (CLI)
+        - macOS (VSCode extension)
+        - Linux
+        - Other / unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Project structure, CLAUDE.md encoding (UTF-8 vs GBK/ANSI — Windows Notepad users take note), custom projectsRoot path, anything else.

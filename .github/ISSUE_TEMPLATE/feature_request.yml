@@ -1,0 +1,55 @@
+name: ✨ Feature request
+description: Suggest a new feature or improvement for project-registry
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea! Two things help us act on it faster:
+        1. Describe the **problem** you're solving, not just the feature you want.
+        2. Say how you'd use it — a concrete day-to-day flow makes the tradeoffs obvious.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: What breaks, annoys, or is missing in your current workflow?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What should the feature do? Sketch the behavior, not the implementation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+      description: Workarounds, other tools, manual steps — helps us scope what's actually new.
+      placeholder: e.g. "I currently export the project list by hand every week."
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the skill would this touch?
+      options:
+        - Core flow (project list / open / save / exit)
+        - Auto-backup (Stop / SessionEnd hooks)
+        - Unread-check / session resume
+        - Installer (npx / plugin marketplace)
+        - Documentation (README / SKILL.md)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, links, or examples of similar features in other tools.
