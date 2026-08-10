@@ -128,7 +128,11 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
 5. **transcript 兜底判定**（未入账检测，双重保险）：
    - 读 `.memory/state.json` 的 `saved_at`（保存流程写入的保存时刻）
    - `saved_at` 缺失（旧项目）→ 直接触发
-   - 存在 → **单步判定**：存档（`.memory/transcripts/` 全部，一般即最新一份）中是否存在 `saved_at` **之后产生的实质 user 消息**（解析 jsonl 的 `timestamp` 字段：timestamp > saved_at 且 type=user、content 为非空文本；「保存/退出」命令已被保存流程的结束时校准排除在基准前）？
+   - 存在 → **单步判定**：存档（`.memory/transcripts/` 全部，一般即最新一份）中是否存在 `saved_at` **之后产生的实质 user 消息**（判定要点见下；「保存/退出」命令已被保存流程的结束时校准排除在基准前）？
+     - **判定要点（双格式兼容，2026-08-10 修正）**：Claude Code transcript 存在两种格式——
+       - 旧格式（≤2.1.x 早期）：消息体在顶层 `content` 字段、`timestamp` 为数字
+       - 新格式（v2.1.226+）：消息体在 `message` 字段（字符串化的 dict，需 `ast.literal_eval`/`json.loads` 解析取 `content`）、`timestamp` 为 ISO 字符串（`2026-08-10T11:14:22.931Z`，转 epoch 秒与 saved_at 同基准比较；数字则直接比较）
+       - 两者都要求：type=user、content 为非空文本、**跳过 `isMeta` 消息**（system-reminder/工具结果注入等元消息非实质内容）；解析失败的字段保守跳过（宁漏勿误）
      - 无 → **残留同步**（保存流程尾部响应/汇报的 Stop 同步会推新存档 mtime——校准后 mtime 恒晚于 saved_at，故不做 mtime 比较，只认实质消息）→ **静默跳过**，不读尾部
      - 有 → **触发**
    - **触发** → 读最近存档**尾部 30 条**做快览并入摘要；未入账量大（>30 条或多份存档）→ **弹 AskUserQuestion 卡片**：完整读 / 读尾部 / 跳过（成本用户决策）
