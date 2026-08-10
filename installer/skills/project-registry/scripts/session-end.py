@@ -105,7 +105,9 @@ def backup_rotate(project_dir: Path):
     ts = time.strftime("%Y%m%d_%H%M%S")
     try:
         (backups / f"CLAUDE.md.{ts}.bak").write_text(md.read_text(encoding="utf-8"), encoding="utf-8")
-    except OSError:
+    except (OSError, UnicodeDecodeError):
+        # UnicodeDecodeError（ValueError 子类）不被 OSError 捕获：CLAUDE.md 非 UTF-8
+        # （如 Windows 记事本 ANSI/GBK 保存）时解码失败 → 备份跳过，不影响 git 提交
         return
     # 轮转：按文件名末尾 YYYYMMDD_HHMMSS 排序，保留最近 10 份
     files = [f for f in backups.glob("CLAUDE.md.*.bak")]
@@ -125,7 +127,7 @@ def git_commit(project_dir: Path):
     try:
         r = subprocess.run(
             ["git", "-C", str(project_dir), "status", "--porcelain"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True, text=True, errors="replace", timeout=10,
         )
         if r.returncode != 0 or not r.stdout.strip():
             return
@@ -160,7 +162,7 @@ def git_commit(project_dir: Path):
         # commit message 动态化（2026-08-09 已知问题修复）：按实际暂存文件生成
         stat = subprocess.run(
             ["git", "-C", str(project_dir), "diff", "--cached", "--stat"],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True, text=True, errors="replace", timeout=10,
         )
         msg = "自动备份：会话结束归档"
         if stat.stdout.strip():

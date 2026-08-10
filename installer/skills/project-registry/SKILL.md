@@ -131,7 +131,7 @@ description: "Use when the user asks to list, create, delete, modify, search, vi
    - 存在 → **单步判定**：存档（`.memory/transcripts/` 全部，一般即最新一份）中是否存在 `saved_at` **之后产生的实质 user 消息**（判定要点见下；「保存/退出」命令已被保存流程的结束时校准排除在基准前）？
      - **判定要点（双格式兼容，2026-08-10 修正）**：Claude Code transcript 存在两种格式——
        - 旧格式（≤2.1.x 早期）：消息体在顶层 `content` 字段、`timestamp` 为数字
-       - 新格式（v2.1.226+）：消息体在 `message` 字段（字符串化的 dict，需 `ast.literal_eval`/`json.loads` 解析取 `content`）、`timestamp` 为 ISO 字符串（`2026-08-10T11:14:22.931Z`，转 epoch 秒与 saved_at 同基准比较；数字则直接比较）
+       - 新格式（v2.1.226+）：消息体在 `message` 字段（**两种形态都要兼容**：直接是 dict 对象 → 直接取 `content`；字符串化的 dict → `ast.literal_eval`/`json.loads` 解析后取 `content`）、`timestamp` 为 ISO 字符串（`2026-08-10T11:14:22.931Z`，转 epoch 秒与 saved_at 同基准比较；数字则直接比较）
        - 两者都要求：type=user、content 为非空文本、**跳过 `isMeta` 消息**（system-reminder/工具结果注入等元消息非实质内容）；解析失败的字段保守跳过（宁漏勿误）
      - 无 → **残留同步**（保存流程尾部响应/汇报的 Stop 同步会推新存档 mtime——校准后 mtime 恒晚于 saved_at，故不做 mtime 比较，只认实质消息）→ **静默跳过**，不读尾部
      - 有 → **触发**
