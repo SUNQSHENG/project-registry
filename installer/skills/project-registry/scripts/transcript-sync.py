@@ -40,7 +40,8 @@ def is_project_dir(cwd: str) -> Path | None:
     except Exception:
         return None
     root = PROJECTS_ROOT.resolve()
-    if p == root or not str(p).startswith(str(root)):
+    # is_relative_to 语义化比较：防 ~/projects2 之类前缀假命中
+    if p == root or not p.is_relative_to(root):
         return None
     rel = p.relative_to(root)
     if len(rel.parts) < 1:
@@ -127,7 +128,17 @@ def main() -> int:
     if project_dir is None:
         return 0  # 非项目目录，静默跳过
 
-    transcript = find_transcript(project_dir)
+    # hook 调用：stdin transcript_path 即当前会话精确路径，直接消费
+    # （绕开 find_transcript 的编码匹配与兜底——同一项目可能有多编码转录目录，
+    #   多项目并发时兜底会选错会话）
+    transcript = None
+    tp = stdin.get("transcript_path") if stdin else None
+    if tp:
+        tp_path = Path(tp)
+        if tp_path.is_file():
+            transcript = tp_path
+    if transcript is None:
+        transcript = find_transcript(project_dir)
     if transcript is None:
         return 0
 

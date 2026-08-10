@@ -41,7 +41,8 @@ def is_project_dir(cwd: str) -> Path | None:
     except Exception:
         return None
     root = PROJECTS_ROOT.resolve()
-    if p == root or not str(p).startswith(str(root)):
+    # is_relative_to 语义化比较：防 ~/projects2 之类前缀假命中
+    if p == root or not p.is_relative_to(root):
         return None
     rel = p.relative_to(root)
     if len(rel.parts) < 1:
