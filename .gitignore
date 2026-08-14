@@ -13,6 +13,13 @@ Thumbs.db
 # 自动保存隐私（对话原文，绝不提交）
 .memory/
 
+# 决策归档（含内部决策细节，绝不提交）
+.archive/
+
+# 内部工作文件（tickets/设计文档，开发产物不发布）
+.scratch/
+docs/token-saving-plan.md
+
 # 本地生成脚本（含个人路径，不发布）
 docs/make_cards.py
 
